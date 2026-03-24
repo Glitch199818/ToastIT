@@ -1,6 +1,30 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Sidebar from "@/components/dashboard/Sidebar";
+import { polar } from "@/lib/polar";
+
+async function checkProStatus(email: string): Promise<boolean> {
+  try {
+    const customers = await polar.customers.list({ email });
+    if (customers.result.items.length === 0) return false;
+
+    const customerId = customers.result.items[0].id;
+
+    const subscriptions = await polar.subscriptions.list({
+      customerId,
+      active: true,
+    });
+    if (subscriptions.result.items.length > 0) return true;
+
+    const orders = await polar.orders.list({
+      customerId,
+      productId: process.env.NEXT_PUBLIC_POLAR_LIFETIME_PRODUCT_ID!,
+    });
+    return orders.result.items.length > 0;
+  } catch {
+    return false;
+  }
+}
 
 export default async function DashboardLayout({
   children,
@@ -16,9 +40,11 @@ export default async function DashboardLayout({
     redirect("/auth/login");
   }
 
+  const isPro = await checkProStatus(user.email!);
+
   return (
     <div style={{ display: "flex", minHeight: "100vh" }}>
-      <Sidebar />
+      <Sidebar isPro={isPro} />
       <main
         style={{
           flex: 1,

@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import SignOutButton from "@/components/auth/SignOutButton";
+import Link from "next/link";
 
 export default async function ProfilePage() {
   const supabase = await createClient();
@@ -128,7 +129,8 @@ export default async function ProfilePage() {
               Free — 1 export per week
             </p>
           </div>
-          <button
+          <Link
+            href="/dashboard/pricing"
             style={{
               fontFamily: "'Rowdies', cursive",
               fontSize: "0.8rem",
@@ -139,10 +141,11 @@ export default async function ProfilePage() {
               borderRadius: "8px",
               cursor: "pointer",
               transition: "all 0.2s",
+              textDecoration: "none",
             }}
           >
             Upgrade
-          </button>
+          </Link>
         </div>
 
         {/* Sign Out */}

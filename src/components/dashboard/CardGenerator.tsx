@@ -73,7 +73,7 @@ const inputStyle = {
   transition: "border-color 0.2s",
 };
 
-export default function CardGenerator() {
+export default function CardGenerator({ isPro = false }: { isPro?: boolean }) {
   const [selectedDrink, setSelectedDrink] = useState<string | null>(null);
   const [milestoneType, setMilestoneType] = useState("");
   const [milestoneNumber, setMilestoneNumber] = useState("");
@@ -81,6 +81,7 @@ export default function CardGenerator() {
   const [drinkSize, setDrinkSize] = useState(100);
   const [numberSize, setNumberSize] = useState(100);
   const [isExporting, setIsExporting] = useState(false);
+  const [exportLimitHit, setExportLimitHit] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
   const canExport = selectedDrink && milestoneNumber && milestoneType;
@@ -89,12 +90,44 @@ export default function CardGenerator() {
     if (!cardRef.current || !canExport) return;
 
     setIsExporting(true);
+    setExportLimitHit(false);
     try {
+      // Check export limit for free users (1 per week)
+      if (!isPro) {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const oneWeekAgo = new Date();
+          oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+          const { count } = await supabase
+            .from("cards")
+            .select("*", { count: "exact", head: true })
+            .eq("user_id", user.id)
+            .gte("created_at", oneWeekAgo.toISOString());
+          if (count && count >= 1) {
+            setExportLimitHit(true);
+            setIsExporting(false);
+            return;
+          }
+        }
+      }
+
       const canvas = await html2canvas(cardRef.current, {
         scale: 2,
         useCORS: true,
         backgroundColor: null,
       });
+
+      // Add watermark for free users
+      if (!isPro) {
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.font = "bold 28px Oxygen, sans-serif";
+          ctx.fillStyle = "rgba(0,0,0,0.15)";
+          ctx.textAlign = "center";
+          ctx.fillText("toastit.app", canvas.width / 2, canvas.height - 30);
+        }
+      }
 
       const dataUrl = canvas.toDataURL("image/png");
 
@@ -338,6 +371,42 @@ export default function CardGenerator() {
             </svg>
             {isExporting ? "Exporting..." : "Download Card"}
           </button>
+          {exportLimitHit && (
+            <p
+              style={{
+                fontFamily: "'Oxygen', sans-serif",
+                fontSize: "0.8rem",
+                color: "#e74c3c",
+                textAlign: "center",
+                marginTop: "10px",
+              }}
+            >
+              Free plan limit: 1 export per week.{" "}
+              <button
+                onClick={async () => {
+                  const res = await fetch("/api/polar/checkout", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ plan: "lifetime" }),
+                  });
+                  const data = await res.json();
+                  if (data.url) window.location.href = data.url;
+                }}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "var(--pink)",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  fontFamily: "'Oxygen', sans-serif",
+                  fontSize: "0.8rem",
+                  textDecoration: "underline",
+                }}
+              >
+                Go Pro for unlimited
+              </button>
+            </p>
+          )}
         </div>
 
         {/* Right: Live Preview */}

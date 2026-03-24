@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
 const navItems = [
   {
     label: "Create Card",
@@ -49,7 +48,7 @@ const navItems = [
   },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ isPro = false }: { isPro?: boolean }) {
   const pathname = usePathname();
 
   return (
@@ -122,55 +121,79 @@ export default function Sidebar() {
       <div style={{ flex: 1 }} />
 
       {/* Pro Badge */}
-      <div
-        style={{
-          margin: "0 14px",
-          padding: "14px",
-          background: "var(--w)",
-          borderRadius: "12px",
-          textAlign: "center",
-        }}
-      >
-        <p
+      {isPro ? (
+        <div
           style={{
-            fontFamily: "'Kanit', sans-serif",
-            fontWeight: 700,
-            fontSize: "0.85rem",
-            color: "var(--ink)",
-            marginBottom: "4px",
+            margin: "0 14px",
+            padding: "14px",
+            background: "var(--w)",
+            borderRadius: "12px",
+            textAlign: "center",
           }}
         >
-          Free Plan
-        </p>
-        <p
+          <p
+            style={{
+              fontFamily: "'Kanit', sans-serif",
+              fontWeight: 700,
+              fontSize: "0.85rem",
+              color: "var(--ink)",
+            }}
+          >
+            Pro Plan
+          </p>
+        </div>
+      ) : (
+        <div
           style={{
-            fontFamily: "'Oxygen', sans-serif",
-            fontSize: "0.7rem",
-            color: "var(--im)",
-            marginBottom: "10px",
-            lineHeight: 1.4,
+            margin: "0 14px",
+            padding: "14px",
+            background: "var(--w)",
+            borderRadius: "12px",
+            textAlign: "center",
           }}
         >
-          Unlock unlimited exports &amp; no watermark
-        </p>
-        <Link
-          href="/dashboard/profile"
-          style={{
-            fontFamily: "'Rowdies', cursive",
-            fontSize: "0.75rem",
-            color: "var(--ink)",
-            background: "var(--pink)",
-            border: "2px solid var(--ink)",
-            padding: "6px 18px",
-            borderRadius: "8px",
-            textDecoration: "none",
-            display: "inline-block",
-            transition: "all 0.2s",
-          }}
-        >
-          Go Pro
-        </Link>
-      </div>
+          <p
+            style={{
+              fontFamily: "'Kanit', sans-serif",
+              fontWeight: 700,
+              fontSize: "0.85rem",
+              color: "var(--ink)",
+              marginBottom: "4px",
+            }}
+          >
+            Free Plan
+          </p>
+          <p
+            style={{
+              fontFamily: "'Oxygen', sans-serif",
+              fontSize: "0.7rem",
+              color: "var(--im)",
+              marginBottom: "10px",
+              lineHeight: 1.4,
+            }}
+          >
+            Unlock unlimited exports &amp; no watermark
+          </p>
+          <Link
+            href="/dashboard/pricing"
+            style={{
+              fontFamily: "'Rowdies', cursive",
+              fontSize: "0.75rem",
+              color: "var(--ink)",
+              background: "var(--pink)",
+              border: "2px solid var(--ink)",
+              padding: "6px 18px",
+              borderRadius: "8px",
+              cursor: "pointer",
+              transition: "all 0.2s",
+              textDecoration: "none",
+              display: "inline-block",
+            }}
+          >
+            Go Pro
+          </Link>
+        </div>
+      )}
     </aside>
   );
 }
