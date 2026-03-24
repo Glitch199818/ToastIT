@@ -25,15 +25,15 @@ export default function Home() {
           ) {
             el.addEventListener("click", (e) => {
               e.preventDefault();
-              window.location.href = "/auth/signup";
+              window.location.href = "/coming-soon";
             });
-            if (el.tagName === "A") (el as HTMLAnchorElement).href = "/auth/signup";
+            if (el.tagName === "A") (el as HTMLAnchorElement).href = "/coming-soon";
           } else if (text.includes("go pro")) {
             el.addEventListener("click", (e) => {
               e.preventDefault();
-              window.location.href = "/auth/signup";
+              window.location.href = "/coming-soon";
             });
-            if (el.tagName === "A") (el as HTMLAnchorElement).href = "/auth/signup";
+            if (el.tagName === "A") (el as HTMLAnchorElement).href = "/coming-soon";
           }
         });
       } catch {
