@@ -9,8 +9,7 @@ export default function Home() {
     const iframe = iframeRef.current;
     if (!iframe) return;
 
-    const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
-    const destination = isLocal ? "/dashboard" : "/coming-soon";
+    const destination = "/auth/signup";
 
     const handleLoad = () => {
       try {

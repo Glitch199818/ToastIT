@@ -31,17 +31,7 @@ export async function GET() {
     });
 
     if (subscriptions.result.items.length > 0) {
-      return NextResponse.json({ isPro: true, plan: "monthly" });
-    }
-
-    // Check for lifetime purchases
-    const orders = await polar.orders.list({
-      customerId,
-      productId: process.env.NEXT_PUBLIC_POLAR_LIFETIME_PRODUCT_ID!,
-    });
-
-    if (orders.result.items.length > 0) {
-      return NextResponse.json({ isPro: true, plan: "lifetime" });
+      return NextResponse.json({ isPro: true });
     }
 
     return NextResponse.json({ isPro: false });

@@ -9,13 +9,7 @@ async function checkProStatus(email: string): Promise<boolean> {
     const customerId = customers.result.items[0].id;
 
     const subscriptions = await polar.subscriptions.list({ customerId, active: true });
-    if (subscriptions.result.items.length > 0) return true;
-
-    const orders = await polar.orders.list({
-      customerId,
-      productId: process.env.NEXT_PUBLIC_POLAR_LIFETIME_PRODUCT_ID!,
-    });
-    return orders.result.items.length > 0;
+    return subscriptions.result.items.length > 0;
   } catch {
     return false;
   }
