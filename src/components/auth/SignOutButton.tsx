@@ -17,20 +17,20 @@ export default function SignOutButton() {
       onClick={handleSignOut}
       style={{
         fontFamily: "'Rowdies', cursive",
-        fontSize: "0.85rem",
-        color: "#1A1A1A",
-        background: "transparent",
-        border: "2px solid #1A1A1A",
+        fontSize: "0.8rem",
+        color: "var(--ink)",
+        background: "var(--pink)",
+        border: "2px solid var(--ink)",
         padding: "8px 20px",
-        borderRadius: "8px",
+        borderRadius: "10px",
         cursor: "pointer",
         transition: "all 0.2s",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.background = "#F27A9F";
+        e.currentTarget.style.opacity = "0.85";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.background = "transparent";
+        e.currentTarget.style.opacity = "1";
       }}
     >
       Sign out

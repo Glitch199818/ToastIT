@@ -34,7 +34,7 @@ export default function PricingToggle() {
           <div className="pra">$0</div>
           <ul className="prf">
             <li>10 drinks available</li>
-            <li>1 card export per week</li>
+            <li>First 5 card exports free</li>
             <li>All templates available</li>
             <li>ToastIT watermark</li>
           </ul>
@@ -42,7 +42,22 @@ export default function PricingToggle() {
             Start free
           </a>
         </div>
-        <div className="prc ft">
+        <div className="prc ft" style={{ position: "relative" }}>
+          {!isLifetime && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src="/Ribbon.png"
+              alt="Launch offer"
+              style={{
+                position: "absolute",
+                top: "-65px",
+                right: "-55px",
+                width: "200px",
+                zIndex: 2,
+                pointerEvents: "none",
+              }}
+            />
+          )}
           <div className="prn">Pro</div>
           <div className="pra">
             {isLifetime ? (
@@ -56,7 +71,7 @@ export default function PricingToggle() {
             )}
           </div>
           <div className="pra-alt">
-            {isLifetime ? "Pay once, toast forever" : "or $29 one-time"}
+            {isLifetime ? "Pay once, toast forever" : "or $48/year"}
           </div>
           <ul className="prf">
             <li>Unlimited exports</li>

@@ -47,7 +47,7 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(
         ref={ref}
         style={{
           width: "100%",
-          aspectRatio: "1336 / 800",
+          aspectRatio: "3600 / 2025",
           borderRadius: "4px",
           background: bgColor,
           border: "3px solid var(--ink)",

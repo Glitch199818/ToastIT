@@ -3,9 +3,9 @@
 import { useState } from "react";
 
 export default function PricingPage() {
-  const [loading, setLoading] = useState<"monthly" | "lifetime" | null>(null);
+  const [loading, setLoading] = useState<"monthly" | "annual" | null>(null);
 
-  const handleUpgrade = async (plan: "monthly" | "lifetime") => {
+  const handleUpgrade = async (plan: "monthly" | "annual") => {
     setLoading(plan);
     try {
       const res = await fetch("/api/polar/checkout", {
@@ -23,12 +23,12 @@ export default function PricingPage() {
   };
 
   return (
-    <div style={{ padding: "32px 40px" }}>
+    <div style={{ padding: "32px 36px" }}>
       <h1
         style={{
-          fontFamily: "'Odor Mean Chey', serif",
-          fontWeight: 400,
-          fontSize: "1.8rem",
+          fontFamily: "'Kanit', sans-serif",
+          fontWeight: 700,
+          fontSize: "2.125rem",
           color: "var(--ink)",
           marginBottom: "8px",
         }}
@@ -52,9 +52,9 @@ export default function PricingPage() {
           style={{
             flex: 1,
             background: "var(--w)",
-            borderRadius: "20px",
+            borderRadius: "14px",
             padding: "32px 28px",
-            border: "2px solid rgba(0,0,0,.06)",
+            border: "2px solid var(--ink)",
             display: "flex",
             flexDirection: "column",
           }}
@@ -72,7 +72,7 @@ export default function PricingPage() {
           >
             Monthly
           </p>
-          <div style={{ marginBottom: "20px" }}>
+          <div style={{ marginBottom: "6px" }}>
             <span
               style={{
                 fontFamily: "'Kanit', sans-serif",
@@ -93,6 +93,16 @@ export default function PricingPage() {
               /mo
             </span>
           </div>
+          <p
+            style={{
+              fontFamily: "'Oxygen', sans-serif",
+              fontSize: "0.75rem",
+              color: "var(--im)",
+              marginBottom: "20px",
+            }}
+          >
+            or $48/year
+          </p>
 
           <ul
             style={{
@@ -106,8 +116,9 @@ export default function PricingPage() {
             {[
               "Unlimited card exports",
               "No watermark",
-              "All 10 drink designs",
-              "Future doodles included",
+              "All drink designs (10+)",
+              "New doodles every week",
+              "Request custom drinks",
               "Cancel anytime",
             ].map((item) => (
               <li
@@ -134,8 +145,8 @@ export default function PricingPage() {
             style={{
               fontFamily: "'Rowdies', cursive",
               fontSize: "0.85rem",
-              color: "var(--ink)",
-              background: "transparent",
+              color: "var(--w)",
+              background: "var(--pink)",
               border: "2px solid var(--ink)",
               padding: "12px 24px",
               borderRadius: "10px",
@@ -144,16 +155,16 @@ export default function PricingPage() {
               width: "100%",
             }}
           >
-            {loading === "monthly" ? "Loading..." : "Subscribe"}
+            {loading === "monthly" ? "Loading..." : "Subscribe Monthly"}
           </button>
         </div>
 
-        {/* Lifetime */}
+        {/* Annual */}
         <div
           style={{
             flex: 1,
             background: "var(--pink)",
-            borderRadius: "20px",
+            borderRadius: "14px",
             padding: "32px 28px",
             border: "2px solid var(--ink)",
             display: "flex",
@@ -177,7 +188,7 @@ export default function PricingPage() {
               letterSpacing: "0.5px",
             }}
           >
-            Best value
+            Save 20%
           </div>
 
           <p
@@ -191,9 +202,9 @@ export default function PricingPage() {
               letterSpacing: "0.5px",
             }}
           >
-            Lifetime
+            Annual
           </p>
-          <div style={{ marginBottom: "20px" }}>
+          <div style={{ marginBottom: "6px" }}>
             <span
               style={{
                 fontFamily: "'Kanit', sans-serif",
@@ -202,19 +213,30 @@ export default function PricingPage() {
                 color: "var(--ink)",
               }}
             >
-              $29
+              $4
             </span>
             <span
               style={{
                 fontFamily: "'Oxygen', sans-serif",
                 fontSize: "0.9rem",
                 color: "var(--ink)",
-                opacity: 0.7,
+                opacity: 0.8,
               }}
             >
-              {" "}one-time
+              /mo
             </span>
           </div>
+          <p
+            style={{
+              fontFamily: "'Oxygen', sans-serif",
+              fontSize: "0.75rem",
+              color: "var(--ink)",
+              opacity: 0.7,
+              marginBottom: "20px",
+            }}
+          >
+            $48 billed annually
+          </p>
 
           <ul
             style={{
@@ -227,10 +249,10 @@ export default function PricingPage() {
           >
             {[
               "Everything in Monthly",
-              "Pay once, use forever",
+              "20% cheaper than monthly",
               "All future doodles & features",
+              "Request custom drinks",
               "Priority support",
-              "No recurring charges",
             ].map((item) => (
               <li
                 key={item}
@@ -251,7 +273,7 @@ export default function PricingPage() {
           </ul>
 
           <button
-            onClick={() => handleUpgrade("lifetime")}
+            onClick={() => handleUpgrade("annual")}
             disabled={loading !== null}
             style={{
               fontFamily: "'Rowdies', cursive",
@@ -266,7 +288,7 @@ export default function PricingPage() {
               width: "100%",
             }}
           >
-            {loading === "lifetime" ? "Loading..." : "Get Lifetime Access"}
+            {loading === "annual" ? "Loading..." : "Subscribe Annually"}
           </button>
         </div>
       </div>

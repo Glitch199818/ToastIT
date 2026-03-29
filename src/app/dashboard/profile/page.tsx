@@ -1,6 +1,22 @@
 import { createClient } from "@/lib/supabase/server";
 import SignOutButton from "@/components/auth/SignOutButton";
 import Link from "next/link";
+import { polar } from "@/lib/polar";
+import ProfileEditor from "@/components/dashboard/ProfileEditor";
+
+async function checkProStatus(email: string): Promise<boolean> {
+  try {
+    const customers = await polar.customers.list({ email });
+    if (customers.result.items.length === 0) return false;
+    const customerId = customers.result.items[0].id;
+    const subscriptions = await polar.subscriptions.list({ customerId, active: true });
+    if (subscriptions.result.items.length > 0) return true;
+    const orders = await polar.orders.list({ customerId });
+    return orders.result.items.length > 0;
+  } catch {
+    return false;
+  }
+}
 
 export default async function ProfilePage() {
   const supabase = await createClient();
@@ -8,15 +24,17 @@ export default async function ProfilePage() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const isPro = user?.email ? await checkProStatus(user.email) : false;
+
   return (
-    <div style={{ padding: "32px 40px" }}>
+    <div style={{ padding: "32px 36px" }}>
       <h1
         style={{
-          fontFamily: "'Odor Mean Chey', serif",
-          fontWeight: 400,
-          fontSize: "1.8rem",
+          fontFamily: "'Kanit', sans-serif",
+          fontWeight: 700,
+          fontSize: "2.125rem",
           color: "var(--ink)",
-          marginBottom: "32px",
+          marginBottom: "24px",
         }}
       >
         Profile
@@ -25,76 +43,19 @@ export default async function ProfilePage() {
       <div
         style={{
           background: "var(--w)",
-          borderRadius: "20px",
+          borderRadius: "14px",
           padding: "32px",
-          border: "2px solid rgba(0,0,0,.05)",
+          border: "2px solid var(--ink)",
           maxWidth: "500px",
         }}
       >
-        {/* Avatar & Name */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "16px",
-            marginBottom: "24px",
-            paddingBottom: "24px",
-            borderBottom: "1.5px solid rgba(0,0,0,.06)",
-          }}
-        >
-          {user?.user_metadata?.avatar_url ? (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img
-              src={user.user_metadata.avatar_url}
-              alt="Avatar"
-              style={{
-                width: "56px",
-                height: "56px",
-                borderRadius: "50%",
-                border: "2px solid rgba(0,0,0,.08)",
-              }}
-            />
-          ) : (
-            <div
-              style={{
-                width: "56px",
-                height: "56px",
-                borderRadius: "50%",
-                background: "var(--pink)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontFamily: "'Kanit', sans-serif",
-                fontWeight: 700,
-                fontSize: "1.4rem",
-                color: "var(--ink)",
-              }}
-            >
-              {(user?.user_metadata?.full_name || user?.email || "?")[0].toUpperCase()}
-            </div>
-          )}
-          <div>
-            <p
-              style={{
-                fontFamily: "'Kanit', sans-serif",
-                fontWeight: 700,
-                fontSize: "1.1rem",
-                color: "var(--ink)",
-              }}
-            >
-              {user?.user_metadata?.full_name || "User"}
-            </p>
-            <p
-              style={{
-                fontFamily: "'Oxygen', sans-serif",
-                fontSize: "0.85rem",
-                color: "var(--im)",
-              }}
-            >
-              {user?.email}
-            </p>
-          </div>
-        </div>
+        {/* Avatar & Name — editable */}
+        <ProfileEditor
+          avatarUrl={user?.user_metadata?.avatar_url || null}
+          fullName={user?.user_metadata?.full_name || ""}
+          email={user?.email || ""}
+          xHandle={user?.user_metadata?.x_handle || ""}
+        />
 
         {/* Plan Info */}
         <div
@@ -104,7 +65,7 @@ export default async function ProfilePage() {
             alignItems: "center",
             marginBottom: "24px",
             paddingBottom: "24px",
-            borderBottom: "1.5px solid rgba(0,0,0,.06)",
+            borderBottom: "1.5px solid rgba(0,0,0,.08)",
           }}
         >
           <div>
@@ -117,7 +78,7 @@ export default async function ProfilePage() {
                 marginBottom: "2px",
               }}
             >
-              Current Plan
+              {isPro ? "Pro Plan" : "Current Plan"}
             </p>
             <p
               style={{
@@ -126,26 +87,28 @@ export default async function ProfilePage() {
                 color: "var(--im)",
               }}
             >
-              Free — 1 export per week
+              {isPro ? "Pro — Unlimited exports, no watermark" : "Free — first 5 exports"}
             </p>
           </div>
-          <Link
-            href="/dashboard/pricing"
-            style={{
-              fontFamily: "'Rowdies', cursive",
-              fontSize: "0.8rem",
-              color: "var(--ink)",
-              background: "var(--pink)",
-              border: "2px solid var(--ink)",
-              padding: "8px 20px",
-              borderRadius: "8px",
-              cursor: "pointer",
-              transition: "all 0.2s",
-              textDecoration: "none",
-            }}
-          >
-            Upgrade
-          </Link>
+          {!isPro && (
+            <Link
+              href="/dashboard/pricing"
+              style={{
+                fontFamily: "'Rowdies', cursive",
+                fontSize: "0.8rem",
+                color: "var(--ink)",
+                background: "var(--pink)",
+                border: "2px solid var(--ink)",
+                padding: "8px 20px",
+                borderRadius: "10px",
+                cursor: "pointer",
+                transition: "all 0.2s",
+                textDecoration: "none",
+              }}
+            >
+              Upgrade
+            </Link>
+          )}
         </div>
 
         {/* Sign Out */}

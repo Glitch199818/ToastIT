@@ -955,6 +955,22 @@ footer a {
   text-decoration: none;
 }
 
+/* DRINK MODAL SCROLLBAR */
+.drink-modal::-webkit-scrollbar {
+  width: 6px;
+}
+.drink-modal::-webkit-scrollbar-track {
+  background: transparent;
+}
+.drink-modal::-webkit-scrollbar-thumb {
+  background: var(--pink);
+  border-radius: 10px;
+}
+.drink-modal {
+  scrollbar-color: var(--pink) transparent;
+  scrollbar-width: thin;
+}
+
 /* ANIMATIONS */
 @keyframes fu {
   from {

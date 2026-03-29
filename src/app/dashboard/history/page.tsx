@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import html2canvas from "html2canvas-pro";
-import CardPreview from "@/components/dashboard/CardPreview";
+import Link from "next/link";
+import Toasty from "@/components/dashboard/Toasty";
 
 interface Card {
   id: string;
@@ -11,25 +11,19 @@ interface Card {
   milestone_number: string;
   milestone_type: string;
   handle: string;
-  drink_size: number;
-  number_size: number;
+  image_url: string | null;
   created_at: string;
 }
 
 function HistoryCard({ card, onDelete }: { card: Card; onDelete: (id: string) => void }) {
   const [hovered, setHovered] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
 
-  const handleRedownload = async () => {
-    if (!cardRef.current) return;
-    const canvas = await html2canvas(cardRef.current, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: null,
-    });
+  const handleRedownload = () => {
+    if (!card.image_url) return;
     const link = document.createElement("a");
     link.download = `toastit-${card.milestone_number}-${card.milestone_type.toLowerCase().replace(/\s+/g, "-")}.png`;
-    link.href = canvas.toDataURL("image/png");
+    link.href = card.image_url;
+    link.target = "_blank";
     link.click();
   };
 
@@ -41,23 +35,44 @@ function HistoryCard({ card, onDelete }: { card: Card; onDelete: (id: string) =>
         position: "relative",
         cursor: "pointer",
         transition: "transform 0.2s ease, box-shadow 0.2s ease",
-        transform: hovered ? "rotate(-2deg) scale(1.02)" : "none",
+        transform: hovered ? "rotate(-1.5deg) scale(1.02)" : "none",
         boxShadow: hovered
           ? "6px 8px 20px rgba(0,0,0,.15)"
           : "3px 4px 10px rgba(0,0,0,.08)",
-        borderRadius: "4px",
+        borderRadius: "0",
         overflow: "hidden",
+        aspectRatio: "1336 / 800",
+        background: "#f5f5f5",
       }}
     >
-      <CardPreview
-        ref={cardRef}
-        drink={card.drink}
-        milestone={card.milestone_number}
-        milestoneLabel={card.milestone_type}
-        handle={card.handle}
-        drinkSize={card.drink_size || 100}
-        numberSize={card.number_size || 100}
-      />
+      {card.image_url ? (
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img
+          src={card.image_url}
+          alt={`${card.milestone_number} ${card.milestone_type}`}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            display: "block",
+          }}
+        />
+      ) : (
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontFamily: "'Oxygen', sans-serif",
+            fontSize: "0.8rem",
+            color: "var(--im)",
+          }}
+        >
+          No image stored
+        </div>
+      )}
 
       {/* Hover overlay with download + delete */}
       {hovered && (
@@ -70,28 +85,30 @@ function HistoryCard({ card, onDelete }: { card: Card; onDelete: (id: string) =>
             gap: "6px",
           }}
         >
-          <button
-            onClick={(e) => { e.stopPropagation(); handleRedownload(); }}
-            style={{
-              width: "32px",
-              height: "32px",
-              borderRadius: "8px",
-              background: "rgba(255,255,255,.9)",
-              border: "none",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              backdropFilter: "blur(4px)",
-            }}
-            title="Download"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
-              <polyline points="7 10 12 15 17 10" />
-              <line x1="12" y1="15" x2="12" y2="3" />
-            </svg>
-          </button>
+          {card.image_url && (
+            <button
+              onClick={(e) => { e.stopPropagation(); handleRedownload(); }}
+              style={{
+                width: "32px",
+                height: "32px",
+                borderRadius: "8px",
+                background: "rgba(255,255,255,.9)",
+                border: "none",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backdropFilter: "blur(4px)",
+              }}
+              title="Download"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+            </button>
+          )}
           <button
             onClick={(e) => { e.stopPropagation(); onDelete(card.id); }}
             style={{
@@ -163,56 +180,65 @@ export default function HistoryPage() {
 
   const handleDelete = async (id: string) => {
     const supabase = createClient();
+    const card = cards.find((c) => c.id === id);
+    // Delete image from storage if it exists
+    if (card?.image_url) {
+      const path = card.image_url.split("/card-images/")[1];
+      if (path) {
+        await supabase.storage.from("card-images").remove([path]);
+      }
+    }
     await supabase.from("cards").delete().eq("id", id);
     setCards((prev) => prev.filter((c) => c.id !== id));
   };
 
   return (
     <div style={{ padding: "32px 36px" }}>
-      <h1
-        style={{
-          fontFamily: "'Odor Mean Chey', serif",
-          fontWeight: 400,
-          fontSize: "1.6rem",
-          color: "var(--ink)",
-          marginBottom: "24px",
-        }}
-      >
-        History
-      </h1>
+      {/* Header with Create button */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+        <h1
+          style={{
+            fontFamily: "'Kanit', sans-serif",
+            fontWeight: 700,
+            fontSize: "2.125rem",
+            color: "var(--ink)",
+          }}
+        >
+          History
+        </h1>
+        <Link
+          href="/dashboard/create"
+          style={{
+            fontFamily: "'Rowdies', cursive",
+            fontSize: "0.8rem",
+            color: "var(--ink)",
+            background: "var(--pink)",
+            border: "2px solid var(--ink)",
+            padding: "8px 18px",
+            borderRadius: "10px",
+            textDecoration: "none",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+          }}
+        >
+          <span style={{ fontSize: "1rem", fontWeight: 700 }}>+</span> Create New
+        </Link>
+      </div>
 
       {loading ? (
-        <p style={{ fontFamily: "'Oxygen', sans-serif", color: "var(--il)" }}>
+        <p style={{ fontFamily: "'Oxygen', sans-serif", color: "var(--im)" }}>
           Loading...
         </p>
       ) : cards.length === 0 ? (
-        <div
-          style={{
-            background: "var(--w)",
-            borderRadius: "16px",
-            padding: "48px",
-            border: "1.5px solid rgba(0,0,0,.05)",
-            textAlign: "center",
-          }}
-        >
-          <svg
-            width="40"
-            height="40"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="var(--il)"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            style={{ marginBottom: "12px", opacity: 0.5 }}
-          >
-            <circle cx="12" cy="12" r="10" />
-            <polyline points="12 6 12 12 16 14" />
-          </svg>
-          <p style={{ fontFamily: "'Oxygen', sans-serif", fontSize: "0.95rem", color: "var(--im)", marginBottom: "4px" }}>
-            No cards yet.
-          </p>
-          <p style={{ fontFamily: "'Oxygen', sans-serif", fontSize: "0.8rem", color: "var(--il)" }}>
+        <div style={{ textAlign: "center", paddingTop: "48px" }}>
+          <Toasty mood="idle" size={100} speech="No toasts yet? Let's fix that." />
+          <p style={{
+            fontFamily: "'Oxygen', sans-serif",
+            fontSize: "0.85rem",
+            color: "var(--im)",
+            margin: "16px auto 0",
+          }}>
             Create and download your first card to see it here.
           </p>
         </div>
@@ -220,8 +246,8 @@ export default function HistoryPage() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
-            gap: "24px",
+            gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+            gap: "20px",
           }}
         >
           {cards.map((card) => (

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Sidebar from "@/components/dashboard/Sidebar";
 import { polar } from "@/lib/polar";
+import DashboardToasty from "@/components/dashboard/DashboardToasty";
 
 async function checkProStatus(email: string): Promise<boolean> {
   try {
@@ -55,6 +56,7 @@ export default async function DashboardLayout({
       >
         {children}
       </main>
+      <DashboardToasty />
     </div>
   );
 }

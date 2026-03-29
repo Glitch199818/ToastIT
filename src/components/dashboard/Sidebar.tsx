@@ -2,6 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+
 const navItems = [
   {
     label: "Create Card",
@@ -37,6 +40,29 @@ const navItems = [
     ),
   },
   {
+    label: "Request Drinks",
+    href: "/dashboard/request-drinks",
+    proOnly: true,
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M8 22h8" />
+        <path d="M12 15v7" />
+        <path d="M3 2h18l-9 13z" />
+        <circle cx="17" cy="7" r="3" fill="none" />
+      </svg>
+    ),
+  },
+  {
+    label: "Notifications",
+    href: "/dashboard/notifications",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
+        <path d="M13.73 21a2 2 0 01-3.46 0" />
+      </svg>
+    ),
+  },
+  {
     label: "Profile",
     href: "/dashboard/profile",
     icon: (
@@ -50,6 +76,28 @@ const navItems = [
 
 export default function Sidebar({ isPro = false }: { isPro?: boolean }) {
   const pathname = usePathname();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    const fetchUnread = async () => {
+      try {
+        const supabase = createClient();
+        const { count } = await supabase
+          .from("notifications")
+          .select("*", { count: "exact", head: true })
+          .eq("read", false);
+        setUnreadCount(count || 0);
+      } catch {
+        // Table may not exist yet — use placeholder count
+        setUnreadCount(1);
+      }
+    };
+    fetchUnread();
+
+    // Re-check when navigating back
+    const interval = setInterval(fetchUnread, 30000);
+    return () => clearInterval(interval);
+  }, [pathname]);
 
   return (
     <aside
@@ -85,10 +133,13 @@ export default function Sidebar({ isPro = false }: { isPro?: boolean }) {
 
       {/* Nav Items */}
       <nav style={{ display: "flex", flexDirection: "column", gap: "2px", padding: "0 12px", maxWidth: "none", margin: 0, alignItems: "stretch", justifyContent: "flex-start" }}>
-        {navItems.map((item) => {
+        {navItems
+          .filter((item) => !("proOnly" in item && item.proOnly) || isPro)
+          .map((item) => {
           const isActive =
             pathname === item.href ||
             (item.href === "/dashboard/create" && pathname === "/dashboard");
+          const isNotif = item.label === "Notifications";
 
           return (
             <Link
@@ -109,10 +160,32 @@ export default function Sidebar({ isPro = false }: { isPro?: boolean }) {
                 background: isActive ? "var(--pink)" : "transparent",
                 transition: "all 0.15s",
                 width: "100%",
+                position: "relative",
               }}
             >
               <span style={{ opacity: isActive ? 1 : 0.5, display: "flex" }}>{item.icon}</span>
               {item.label}
+              {/* Notification badge */}
+              {isNotif && unreadCount > 0 && !isActive && (
+                <span style={{
+                  marginLeft: "auto",
+                  background: "var(--pink)",
+                  color: "var(--w)",
+                  fontFamily: "'Kanit', sans-serif",
+                  fontWeight: 700,
+                  fontSize: "0.65rem",
+                  minWidth: "18px",
+                  height: "18px",
+                  borderRadius: "9px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: "0 5px",
+                  border: "1.5px solid var(--ink)",
+                }}>
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
             </Link>
           );
         })}
@@ -126,17 +199,18 @@ export default function Sidebar({ isPro = false }: { isPro?: boolean }) {
           style={{
             margin: "0 14px",
             padding: "14px",
-            background: "var(--w)",
+            background: "var(--pink)",
             borderRadius: "12px",
             textAlign: "center",
+            border: "2px solid var(--ink)",
           }}
         >
           <p
             style={{
               fontFamily: "'Kanit', sans-serif",
               fontWeight: 700,
-              fontSize: "0.85rem",
-              color: "var(--ink)",
+              fontSize: "1.05rem",
+              color: "var(--w)",
             }}
           >
             Pro Plan

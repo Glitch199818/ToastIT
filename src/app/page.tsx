@@ -9,6 +9,9 @@ export default function Home() {
     const iframe = iframeRef.current;
     if (!iframe) return;
 
+    const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+    const destination = isLocal ? "/dashboard" : "/coming-soon";
+
     const handleLoad = () => {
       try {
         const doc = iframe.contentDocument;
@@ -21,19 +24,14 @@ export default function Home() {
             text.includes("try for free") ||
             text.includes("create your first") ||
             text.includes("start free") ||
-            text.includes("get started")
+            text.includes("get started") ||
+            text.includes("go pro")
           ) {
             el.addEventListener("click", (e) => {
               e.preventDefault();
-              window.location.href = "/coming-soon";
+              window.location.href = destination;
             });
-            if (el.tagName === "A") (el as HTMLAnchorElement).href = "/coming-soon";
-          } else if (text.includes("go pro")) {
-            el.addEventListener("click", (e) => {
-              e.preventDefault();
-              window.location.href = "/coming-soon";
-            });
-            if (el.tagName === "A") (el as HTMLAnchorElement).href = "/coming-soon";
+            if (el.tagName === "A") (el as HTMLAnchorElement).href = destination;
           }
         });
       } catch {
