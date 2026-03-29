@@ -42,7 +42,13 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    console.log("Checkout debug:", { productId, plan, server: process.env.POLAR_SANDBOX });
+    const token = process.env.POLAR_ACCESS_TOKEN || "";
+    console.log("Checkout debug:", {
+      productId,
+      plan,
+      tokenPrefix: token.substring(0, 8) + "...",
+      tokenLength: token.length,
+    });
     const checkout = await polar.checkouts.create({
       products: [productId],
       successUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard/create?upgraded=true`,
