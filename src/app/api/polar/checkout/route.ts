@@ -41,14 +41,21 @@ export async function POST(req: NextRequest) {
     productId = launchEligible ? PRODUCTS.launchMonthly : PRODUCTS.monthly;
   }
 
-  const checkout = await polar.checkouts.create({
-    products: [productId],
-    successUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard/create?upgraded=true`,
-    customerEmail: user.email,
-    metadata: {
-      supabase_user_id: user.id,
-    },
-  });
+  try {
+    console.log("Checkout debug:", { productId, plan, server: process.env.POLAR_SANDBOX });
+    const checkout = await polar.checkouts.create({
+      products: [productId],
+      successUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard/create?upgraded=true`,
+      customerEmail: user.email,
+      metadata: {
+        supabase_user_id: user.id,
+      },
+    });
 
-  return NextResponse.json({ url: checkout.url });
+    return NextResponse.json({ url: checkout.url });
+  } catch (err: unknown) {
+    console.error("Polar checkout error:", err);
+    const message = err instanceof Error ? err.message : "Unknown error";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }
