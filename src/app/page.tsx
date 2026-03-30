@@ -1,9 +1,19 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function Home() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Check auth state
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) setIsLoggedIn(true);
+    });
+  }, []);
 
   useEffect(() => {
     const iframe = iframeRef.current;
@@ -28,22 +38,37 @@ export default function Home() {
 
             el.addEventListener("click", (e) => {
               e.preventDefault();
-              window.location.href = `/auth/signup?plan=${plan}`;
+              window.location.href = isLoggedIn
+                ? "/dashboard/pricing"
+                : `/auth/signup?plan=${plan}`;
             });
             if (el.tagName === "A")
-              (el as HTMLAnchorElement).href = `/auth/signup?plan=${plan}`;
+              (el as HTMLAnchorElement).href = isLoggedIn
+                ? "/dashboard/pricing"
+                : `/auth/signup?plan=${plan}`;
           } else if (
             text.includes("try for free") ||
             text.includes("create your first") ||
             text.includes("start free") ||
             text.includes("get started")
           ) {
-            el.addEventListener("click", (e) => {
-              e.preventDefault();
-              window.location.href = "/auth/signup";
-            });
-            if (el.tagName === "A")
-              (el as HTMLAnchorElement).href = "/auth/signup";
+            // Swap text and link for logged-in users
+            if (isLoggedIn) {
+              el.textContent = "Dashboard";
+              el.addEventListener("click", (e) => {
+                e.preventDefault();
+                window.location.href = "/dashboard/create";
+              });
+              if (el.tagName === "A")
+                (el as HTMLAnchorElement).href = "/dashboard/create";
+            } else {
+              el.addEventListener("click", (e) => {
+                e.preventDefault();
+                window.location.href = "/auth/signup";
+              });
+              if (el.tagName === "A")
+                (el as HTMLAnchorElement).href = "/auth/signup";
+            }
           }
         });
       } catch {
@@ -52,8 +77,10 @@ export default function Home() {
     };
 
     iframe.addEventListener("load", handleLoad);
+    // Re-run when auth state resolves
+    if (iframe.contentDocument?.readyState === "complete") handleLoad();
     return () => iframe.removeEventListener("load", handleLoad);
-  }, []);
+  }, [isLoggedIn]);
 
   return (
     <iframe

@@ -175,7 +175,6 @@ export function ToastyNap({ size = 100 }: { size?: number }) {
           style={{
             imageRendering: "pixelated",
             display: i === frame ? "block" : "none",
-            transform: "scaleX(-1)",
             position: i === 0 ? "relative" : "absolute",
             top: 0,
             left: 0,

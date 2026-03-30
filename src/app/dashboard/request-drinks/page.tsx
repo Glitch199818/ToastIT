@@ -254,25 +254,30 @@ export default function RequestDrinksPage() {
           fontWeight: 700,
           fontSize: "2.125rem",
           color: "var(--ink)",
-          marginBottom: "4px",
+          marginBottom: isPro === false ? "0px" : "4px",
         }}
       >
         Drink Requests
       </h1>
-      <p
-        style={{
-          fontFamily: "'Oxygen', sans-serif",
-          fontSize: "0.9rem",
-          color: "var(--im)",
-          marginBottom: "24px",
-        }}
-      >
-        Vote for drinks you want added. Top pick each week wins.
-      </p>
+      {isPro !== false && (
+        <p
+          style={{
+            fontFamily: "'Oxygen', sans-serif",
+            fontSize: "0.9rem",
+            color: "var(--im)",
+            marginBottom: "24px",
+          }}
+        >
+          Vote for drinks you want added. Top pick each week wins.
+        </p>
+      )}
 
       {/* Loading state */}
       {isPro === null && (
-        <p style={{ fontFamily: "'Oxygen', sans-serif", color: "var(--im)" }}>Loading...</p>
+        <div style={{ paddingTop: "48px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <div style={{ width: "200px", height: "20px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "200% 100%", animation: "shimmer 1.5s infinite", borderRadius: "6px" }} />
+          <style>{`@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }`}</style>
+        </div>
       )}
 
       {/* Upgrade gate for free users */}
@@ -283,7 +288,7 @@ export default function RequestDrinksPage() {
             flexDirection: "column",
             alignItems: "center",
             textAlign: "center",
-            paddingTop: "32px",
+            paddingTop: "48px",
           }}
         >
           <ToastyDrinks size={120} />

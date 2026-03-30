@@ -113,6 +113,22 @@ function MilestoneDropdown({ value, onChange }: { value: string; onChange: (v: s
   const [open, setOpen] = useState(false);
   const [hoveredGroup, setHoveredGroup] = useState<string | null>(null);
   const ref = useRef<HTMLDivElement>(null);
+  const leaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const setHoverWithDelay = (group: string | null) => {
+    if (leaveTimer.current) {
+      clearTimeout(leaveTimer.current);
+      leaveTimer.current = null;
+    }
+    if (group) {
+      setHoveredGroup(group);
+    } else {
+      // Delay clearing so cursor can travel to submenu
+      leaveTimer.current = setTimeout(() => {
+        setHoveredGroup(null);
+      }, 300);
+    }
+  };
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -122,7 +138,10 @@ function MilestoneDropdown({ value, onChange }: { value: string; onChange: (v: s
       }
     };
     document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      if (leaveTimer.current) clearTimeout(leaveTimer.current);
+    };
   }, []);
 
   return (
@@ -166,8 +185,8 @@ function MilestoneDropdown({ value, onChange }: { value: string; onChange: (v: s
             <div
               key={cat.group}
               style={{ position: "relative" }}
-              onMouseEnter={() => setHoveredGroup(cat.group)}
-              onMouseLeave={() => setHoveredGroup(null)}
+              onMouseEnter={() => setHoverWithDelay(cat.group)}
+              onMouseLeave={() => setHoverWithDelay(null)}
             >
               <button
                 style={{
@@ -196,17 +215,24 @@ function MilestoneDropdown({ value, onChange }: { value: string; onChange: (v: s
               {/* Submenu */}
               {hoveredGroup === cat.group && (
                 <div
+                  onMouseEnter={() => setHoverWithDelay(cat.group)}
+                  onMouseLeave={() => setHoverWithDelay(null)}
                   style={{
                     position: "absolute",
                     top: "-6px",
-                    left: "calc(100% + 4px)",
+                    left: "calc(100%)",
+                    paddingLeft: "4px",
+                    zIndex: 51,
+                  }}
+                >
+                <div
+                  style={{
                     width: "170px",
                     background: "var(--w)",
                     border: "2px solid var(--ink)",
                     borderRadius: "12px",
                     padding: "6px 0",
                     boxShadow: "0 8px 24px rgba(0,0,0,.1)",
-                    zIndex: 51,
                   }}
                 >
                   {cat.options.map((opt) => (
@@ -233,6 +259,7 @@ function MilestoneDropdown({ value, onChange }: { value: string; onChange: (v: s
                       {opt}
                     </button>
                   ))}
+                </div>
                 </div>
               )}
             </div>
