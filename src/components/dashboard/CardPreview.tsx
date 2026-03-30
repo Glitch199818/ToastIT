@@ -131,25 +131,47 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(
           {handle ? (handle.startsWith("@") ? handle : `@${handle}`) : "@handle"}
         </div>
 
-        {/* Watermark for free users */}
+        {/* Watermark sticker for free users */}
         {!isPro && (
           <div
             style={{
               position: "absolute",
-              top: "10px",
-              right: "14px",
-              fontFamily: "'Roboto', sans-serif",
-              fontWeight: 700,
-              fontSize: "0.65rem",
-              color: "rgba(0,0,0,0.4)",
-              background: "rgba(255,255,255,0.5)",
-              padding: "3px 8px",
-              borderRadius: "4px",
-              letterSpacing: "0.3px",
+              top: "12px",
+              right: "-8px",
               zIndex: 5,
+              transform: "rotate(3deg)",
             }}
           >
-            Made with ToastIT
+            <div
+              style={{
+                background: "#FFFDF5",
+                border: "2px solid var(--ink)",
+                padding: "5px 14px 5px 12px",
+                fontFamily: "'Seaweed Script', cursive",
+                fontSize: "0.7rem",
+                color: "var(--ink)",
+                whiteSpace: "nowrap",
+                boxShadow: "2px 2px 0 rgba(0,0,0,0.1)",
+                position: "relative",
+              }}
+            >
+              Made with ToastIT
+              {/* Tape fold effect on left edge */}
+              <div
+                style={{
+                  position: "absolute",
+                  left: "-6px",
+                  top: "50%",
+                  transform: "translateY(-50%) rotate(45deg)",
+                  width: "10px",
+                  height: "10px",
+                  background: "#FFFDF5",
+                  border: "2px solid var(--ink)",
+                  borderRight: "none",
+                  borderTop: "none",
+                }}
+              />
+            </div>
           </div>
         )}
       </div>
