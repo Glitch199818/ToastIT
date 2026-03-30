@@ -355,14 +355,19 @@ export default function CardGenerator({ isPro = false }: { isPro?: boolean }) {
       if (!isPro) {
         const ctx = canvas.getContext("2d");
         if (ctx) {
-          const fontSize = Math.round(canvas.width * 0.035);
-          ctx.font = `600 ${fontSize}px Oxygen, sans-serif`;
+          const fontSize = Math.round(canvas.width * 0.032);
+          ctx.save();
+          ctx.font = `600 ${fontSize}px 'Oxygen', sans-serif`;
           ctx.textAlign = "right";
-          // Shadow for readability on any background
-          ctx.fillStyle = "rgba(255,255,255,0.6)";
-          ctx.fillText("Made with ToastIT", canvas.width - 20, canvas.height - 18);
-          ctx.fillStyle = "rgba(0,0,0,0.35)";
-          ctx.fillText("Made with ToastIT", canvas.width - 20, canvas.height - 18);
+          ctx.textBaseline = "bottom";
+          // White outline for readability on dark backgrounds
+          ctx.strokeStyle = "rgba(255,255,255,0.8)";
+          ctx.lineWidth = 4;
+          ctx.strokeText("Made with ToastIT", canvas.width - 40, canvas.height - 30);
+          // Dark text
+          ctx.fillStyle = "rgba(0,0,0,0.45)";
+          ctx.fillText("Made with ToastIT", canvas.width - 40, canvas.height - 30);
+          ctx.restore();
         }
       }
 
@@ -1168,34 +1173,37 @@ export default function CardGenerator({ isPro = false }: { isPro?: boolean }) {
         </div>
       )}
 
-      {/* Confetti on download */}
+      {/* Confetti burst on download */}
       {toastyDancing && (
         <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 199, overflow: "hidden" }}>
-          {Array.from({ length: 40 }).map((_, i) => {
-            const left = Math.random() * 100;
-            const delay = Math.random() * 0.8;
-            const duration = 1.5 + Math.random() * 1.5;
-            const size = 6 + Math.random() * 8;
-            const colors = ["var(--pink)", "#FFD700", "var(--ink)", "#e0879a", "#FFF3CD", "#FF6B6B", "#4ECDC4"];
+          {Array.from({ length: 60 }).map((_, i) => {
+            const angle = (i / 60) * 360 + (Math.random() - 0.5) * 30;
+            const rad = (angle * Math.PI) / 180;
+            const distance = 200 + Math.random() * 400;
+            const tx = Math.cos(rad) * distance;
+            const ty = Math.sin(rad) * distance - 100; // bias upward
+            const size = 5 + Math.random() * 9;
+            const colors = ["var(--pink)", "#FFD700", "var(--ink)", "#e0879a", "#FFF3CD", "#FF6B6B", "#4ECDC4", "#FF85A2"];
             const color = colors[i % colors.length];
-            const rotation = Math.random() * 360;
-            const drift = (Math.random() - 0.5) * 80;
-            const shape = i % 3; // 0=square, 1=circle, 2=rectangle
+            const rotation = Math.random() * 720;
+            const delay = Math.random() * 0.1;
+            const duration = 0.6 + Math.random() * 0.5;
+            const shape = i % 3;
             return (
               <div
                 key={i}
                 style={{
                   position: "absolute",
-                  top: "-10px",
-                  left: `${left}%`,
+                  top: "50%",
+                  left: "50%",
                   width: shape === 2 ? `${size * 0.5}px` : `${size}px`,
                   height: shape === 2 ? `${size * 1.5}px` : `${size}px`,
                   background: color,
-                  borderRadius: shape === 1 ? "50%" : "1px",
-                  transform: `rotate(${rotation}deg)`,
-                  animation: `confettiFall ${duration}s ease-in ${delay}s forwards`,
-                  ["--drift" as string]: `${drift}px`,
-                  opacity: 0,
+                  borderRadius: shape === 1 ? "50%" : "2px",
+                  animation: `confettiBurst ${duration}s cubic-bezier(0,.6,.5,1) ${delay}s forwards`,
+                  ["--tx" as string]: `${tx}px`,
+                  ["--ty" as string]: `${ty}px`,
+                  ["--rot" as string]: `${rotation}deg`,
                 }}
               />
             );
@@ -1212,9 +1220,10 @@ export default function CardGenerator({ isPro = false }: { isPro?: boolean }) {
           from { opacity: 0; }
           to { opacity: 1; }
         }
-        @keyframes confettiFall {
-          0% { opacity: 1; transform: translateY(0) translateX(0) rotate(0deg); }
-          100% { opacity: 0; transform: translateY(100vh) translateX(var(--drift, 0px)) rotate(720deg); }
+        @keyframes confettiBurst {
+          0% { opacity: 1; transform: translate(0, 0) rotate(0deg) scale(0.3); }
+          40% { opacity: 1; transform: translate(calc(var(--tx) * 0.7), calc(var(--ty) * 0.7)) rotate(calc(var(--rot) * 0.5)) scale(1.1); }
+          100% { opacity: 0; transform: translate(var(--tx), calc(var(--ty) + 80px)) rotate(var(--rot)) scale(0.4); }
         }
         .drink-modal ::-webkit-scrollbar {
           width: 6px;
