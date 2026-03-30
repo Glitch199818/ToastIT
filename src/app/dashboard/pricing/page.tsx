@@ -40,11 +40,33 @@ export default function PricingPage() {
           fontFamily: "'Oxygen', sans-serif",
           fontSize: "0.95rem",
           color: "var(--im)",
-          marginBottom: "40px",
+          marginBottom: "16px",
         }}
       >
         Unlock the full ToastIT experience
       </p>
+      <div
+        style={{
+          display: "inline-block",
+          background: "#FFF3E0",
+          border: "1.5px solid #FFB74D",
+          borderRadius: "8px",
+          padding: "8px 16px",
+          marginBottom: "32px",
+        }}
+      >
+        <p
+          style={{
+            fontFamily: "'Oxygen', sans-serif",
+            fontSize: "0.8rem",
+            color: "#E65100",
+            fontWeight: 600,
+            margin: 0,
+          }}
+        >
+          Launch offer — lock in these prices before they go up!
+        </p>
+      </div>
 
       <div style={{ display: "flex", gap: "24px", maxWidth: "700px" }}>
         {/* Monthly */}
@@ -57,8 +79,23 @@ export default function PricingPage() {
             border: "2px solid var(--ink)",
             display: "flex",
             flexDirection: "column",
+            position: "relative",
+            overflow: "visible",
           }}
         >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/Ribbon.png"
+            alt="Launch offer"
+            style={{
+              position: "absolute",
+              top: "-55px",
+              right: "-55px",
+              width: "180px",
+              zIndex: 2,
+              pointerEvents: "none",
+            }}
+          />
           <p
             style={{
               fontFamily: "'Kanit', sans-serif",
