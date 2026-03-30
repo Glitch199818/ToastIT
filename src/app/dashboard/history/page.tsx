@@ -231,13 +231,13 @@ export default function HistoryPage() {
           Loading...
         </p>
       ) : cards.length === 0 ? (
-        <div style={{ textAlign: "center", paddingTop: "48px" }}>
+        <div style={{ textAlign: "center", paddingTop: "48px", display: "flex", flexDirection: "column", alignItems: "center" }}>
           <ToastyNap size={100} />
           <p style={{
             fontFamily: "'Oxygen', sans-serif",
             fontSize: "0.85rem",
             color: "var(--im)",
-            margin: "16px auto 0",
+            marginTop: "16px",
           }}>
             Create and download your first card to see it here.
           </p>

@@ -63,7 +63,7 @@ export default function NotificationsPage() {
           Loading...
         </p>
       ) : notifications.length === 0 ? (
-        <div style={{ textAlign: "center", paddingTop: "48px" }}>
+        <div style={{ textAlign: "center", paddingTop: "48px", display: "flex", flexDirection: "column", alignItems: "center" }}>
           <ToastyNap size={120} />
           <p style={{
             fontFamily: "'Oxygen', sans-serif",
@@ -71,7 +71,7 @@ export default function NotificationsPage() {
             color: "var(--im)",
             lineHeight: 1.5,
             maxWidth: "320px",
-            margin: "16px auto 0",
+            marginTop: "16px",
           }}>
             Tag <strong style={{ color: "var(--ink)" }}>@sushbuilds</strong> on X after sharing your card to get featured!
           </p>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { ToastyDrinks } from "@/components/dashboard/Toasty";
 
 interface DrinkRequest {
   id: string;
@@ -269,23 +270,29 @@ export default function RequestDrinksPage() {
         Vote for drinks you want added. Top pick each week wins.
       </p>
 
+      {/* Loading state */}
+      {isPro === null && (
+        <p style={{ fontFamily: "'Oxygen', sans-serif", color: "var(--im)" }}>Loading...</p>
+      )}
+
       {/* Upgrade gate for free users */}
       {isPro === false && (
         <div
           style={{
-            background: "var(--bg)",
-            border: "2px solid var(--ink)",
-            borderRadius: "16px",
-            padding: "40px 32px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
             textAlign: "center",
-            maxWidth: "480px",
+            paddingTop: "32px",
           }}
         >
+          <ToastyDrinks size={120} />
           <p
             style={{
               fontFamily: "'Seaweed Script', cursive",
               fontSize: "2rem",
               color: "var(--ink)",
+              marginTop: "16px",
               marginBottom: "12px",
             }}
           >
@@ -297,6 +304,7 @@ export default function RequestDrinksPage() {
               fontSize: "0.9rem",
               color: "var(--im)",
               lineHeight: 1.6,
+              maxWidth: "380px",
               marginBottom: "8px",
             }}
           >
@@ -335,7 +343,7 @@ export default function RequestDrinksPage() {
       )}
 
       {/* Your suggestion card */}
-      {isPro !== false && (<>
+      {isPro !== false && isPro !== null && (<>
       <div
         style={{
           background: "var(--w)",
