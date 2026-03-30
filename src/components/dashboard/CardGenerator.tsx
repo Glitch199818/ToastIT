@@ -351,26 +351,6 @@ export default function CardGenerator({ isPro = false }: { isPro?: boolean }) {
         backgroundColor: null,
       });
 
-      // Add watermark for free users
-      if (!isPro) {
-        const ctx = canvas.getContext("2d");
-        if (ctx) {
-          const fontSize = Math.round(canvas.width * 0.032);
-          ctx.save();
-          ctx.font = `600 ${fontSize}px 'Oxygen', sans-serif`;
-          ctx.textAlign = "right";
-          ctx.textBaseline = "bottom";
-          // White outline for readability on dark backgrounds
-          ctx.strokeStyle = "rgba(255,255,255,0.8)";
-          ctx.lineWidth = 4;
-          ctx.strokeText("Made with ToastIT", canvas.width - 40, canvas.height - 30);
-          // Dark text
-          ctx.fillStyle = "rgba(0,0,0,0.45)";
-          ctx.fillText("Made with ToastIT", canvas.width - 40, canvas.height - 30);
-          ctx.restore();
-        }
-      }
-
       // Convert to blob for both download and upload
       const blob = await new Promise<Blob>((resolve) => {
         canvas.toBlob((b) => resolve(b!), "image/png");
@@ -887,6 +867,7 @@ export default function CardGenerator({ isPro = false }: { isPro?: boolean }) {
             handle={handle}
             drinkSize={drinkSize}
             numberSize={numberSize}
+            isPro={isPro}
           />
         </div>
       </div>

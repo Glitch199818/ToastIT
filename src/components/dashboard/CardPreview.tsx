@@ -24,10 +24,11 @@ interface CardPreviewProps {
   handle: string;
   drinkSize?: number;
   numberSize?: number;
+  isPro?: boolean;
 }
 
 const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(
-  ({ drink, milestone, milestoneLabel, handle, drinkSize = 100, numberSize = 100 }, ref) => {
+  ({ drink, milestone, milestoneLabel, handle, drinkSize = 100, numberSize = 100, isPro = false }, ref) => {
     const bgColor = drink ? DRINK_COLORS[drink] || "#FFB4E4" : "#FFB4E4";
     const displayMilestone = milestone || "100";
 
@@ -129,6 +130,28 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(
         >
           {handle ? (handle.startsWith("@") ? handle : `@${handle}`) : "@handle"}
         </div>
+
+        {/* Watermark for free users */}
+        {!isPro && (
+          <div
+            style={{
+              position: "absolute",
+              top: "10px",
+              right: "14px",
+              fontFamily: "'Roboto', sans-serif",
+              fontWeight: 700,
+              fontSize: "0.65rem",
+              color: "rgba(0,0,0,0.4)",
+              background: "rgba(255,255,255,0.5)",
+              padding: "3px 8px",
+              borderRadius: "4px",
+              letterSpacing: "0.3px",
+              zIndex: 5,
+            }}
+          >
+            Made with ToastIT
+          </div>
+        )}
       </div>
     );
   }
