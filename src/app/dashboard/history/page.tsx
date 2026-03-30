@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
-import Toasty from "@/components/dashboard/Toasty";
+import { ToastyNap } from "@/components/dashboard/Toasty";
 
 interface Card {
   id: string;
@@ -232,7 +232,7 @@ export default function HistoryPage() {
         </p>
       ) : cards.length === 0 ? (
         <div style={{ textAlign: "center", paddingTop: "48px" }}>
-          <Toasty mood="idle" size={100} speech="No toasts yet? Let's fix that." />
+          <ToastyNap size={100} />
           <p style={{
             fontFamily: "'Oxygen', sans-serif",
             fontSize: "0.85rem",

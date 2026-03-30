@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { ToastyStatic } from "@/components/dashboard/Toasty";
+import { ToastyNap } from "@/components/dashboard/Toasty";
 
 interface Notification {
   id: string;
@@ -64,7 +64,7 @@ export default function NotificationsPage() {
         </p>
       ) : notifications.length === 0 ? (
         <div style={{ textAlign: "center", paddingTop: "48px" }}>
-          <ToastyStatic mood="sleeping" size={120} speech="Nothing here yet" />
+          <ToastyNap size={120} />
           <p style={{
             fontFamily: "'Oxygen', sans-serif",
             fontSize: "0.85rem",

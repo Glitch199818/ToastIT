@@ -146,6 +146,46 @@ export function ToastyDrinks({ size = 100 }: { size?: number }) {
   );
 }
 
+/* ---- Toasty Nap animation (frame-by-frame) ---- */
+const NAP_FRAMES = Array.from({ length: 8 }, (_, i) =>
+  `/toasty_nap/${String(i + 1).padStart(2, "0")}.png`
+);
+
+export function ToastyNap({ size = 100 }: { size?: number }) {
+  const [frame, setFrame] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFrame((f) => (f + 1) % NAP_FRAMES.length);
+    }, 200); // slower for sleeping
+    return () => clearInterval(interval);
+  }, []);
+
+  const aspectRatio = 1680 / 1376;
+  return (
+    <div style={{ width: size, height: size * aspectRatio, position: "relative", overflow: "hidden" }}>
+      {NAP_FRAMES.map((src, i) => (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          key={src}
+          src={src}
+          alt=""
+          width={size}
+          height={size * aspectRatio}
+          style={{
+            imageRendering: "pixelated",
+            display: i === frame ? "block" : "none",
+            transform: "scaleX(-1)",
+            position: i === 0 ? "relative" : "absolute",
+            top: 0,
+            left: 0,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
 /* ---- Walking Toasty (for bottom of page) ---- */
 export default function Toasty({
   mood = "idle",
