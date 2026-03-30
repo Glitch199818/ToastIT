@@ -12,23 +12,6 @@ interface Notification {
   read: boolean;
 }
 
-const PLACEHOLDER_NOTIFICATIONS: Notification[] = [
-  {
-    id: "placeholder-1",
-    type: "welcome",
-    message: "Welcome to ToastIT! Create your first celebration card and share it on X.",
-    created_at: new Date().toISOString(),
-    read: false,
-  },
-  {
-    id: "placeholder-2",
-    type: "feature",
-    message: "New drinks added this week — Espresso Martini and Pina Colada are now available!",
-    created_at: new Date(Date.now() - 86400000).toISOString(),
-    read: true,
-  },
-];
-
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,21 +24,21 @@ export default function NotificationsPage() {
         .select("*")
         .order("created_at", { ascending: false });
 
-      // Use placeholder if no real notifications
-      if (data && data.length > 0) {
-        setNotifications(data);
-      } else {
-        setNotifications(PLACEHOLDER_NOTIFICATIONS);
-      }
+      setNotifications(data || []);
       setLoading(false);
 
-      // Mark all as read
+      // Mark all unread as read
       if (data && data.some((n) => !n.read)) {
         const unreadIds = data.filter((n) => !n.read).map((n) => n.id);
         await supabase
           .from("notifications")
           .update({ read: true })
           .in("id", unreadIds);
+
+        // Update local state immediately
+        setNotifications((prev) =>
+          prev.map((n) => ({ ...n, read: true }))
+        );
       }
     };
     fetchNotifications();

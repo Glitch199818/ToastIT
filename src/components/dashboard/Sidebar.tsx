@@ -88,8 +88,8 @@ export default function Sidebar({ isPro = false }: { isPro?: boolean }) {
           .eq("read", false);
         setUnreadCount(count || 0);
       } catch {
-        // Table may not exist yet — use placeholder count
-        setUnreadCount(1);
+        // Table may not exist yet
+        setUnreadCount(0);
       }
     };
     fetchUnread();
@@ -134,7 +134,6 @@ export default function Sidebar({ isPro = false }: { isPro?: boolean }) {
       {/* Nav Items */}
       <nav style={{ display: "flex", flexDirection: "column", gap: "2px", padding: "0 12px", maxWidth: "none", margin: 0, alignItems: "stretch", justifyContent: "flex-start" }}>
         {navItems
-          .filter((item) => !("proOnly" in item && item.proOnly) || isPro)
           .map((item) => {
           const isActive =
             pathname === item.href ||

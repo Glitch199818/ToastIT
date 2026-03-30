@@ -17,6 +17,7 @@ interface DrinkRequest {
 }
 
 export default function RequestDrinksPage() {
+  const [isPro, setIsPro] = useState<boolean | null>(null);
   const [requests, setRequests] = useState<DrinkRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [drinkName, setDrinkName] = useState("");
@@ -109,6 +110,16 @@ export default function RequestDrinksPage() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
+
+      // Check pro status
+      try {
+        const res = await fetch("/api/polar/status");
+        const data = await res.json();
+        setIsPro(data.isPro ?? false);
+      } catch {
+        setIsPro(false);
+      }
+
       if (user) {
         setUserId(user.id);
         setUserHandle(
@@ -258,7 +269,73 @@ export default function RequestDrinksPage() {
         Vote for drinks you want added. Top pick each week wins.
       </p>
 
+      {/* Upgrade gate for free users */}
+      {isPro === false && (
+        <div
+          style={{
+            background: "var(--bg)",
+            border: "2px solid var(--ink)",
+            borderRadius: "16px",
+            padding: "40px 32px",
+            textAlign: "center",
+            maxWidth: "480px",
+          }}
+        >
+          <p
+            style={{
+              fontFamily: "'Seaweed Script', cursive",
+              fontSize: "2rem",
+              color: "var(--ink)",
+              marginBottom: "12px",
+            }}
+          >
+            Your drink, your rules
+          </p>
+          <p
+            style={{
+              fontFamily: "'Oxygen', sans-serif",
+              fontSize: "0.9rem",
+              color: "var(--im)",
+              lineHeight: 1.6,
+              marginBottom: "8px",
+            }}
+          >
+            Pro members get to shape the drink menu.
+            Suggest new doodles, vote on what gets drawn next,
+            and see your pick come to life.
+          </p>
+          <p
+            style={{
+              fontFamily: "'Oxygen', sans-serif",
+              fontSize: "0.8rem",
+              color: "var(--im)",
+              marginBottom: "24px",
+            }}
+          >
+            Imagine toasting with a drink <em>you</em> picked.
+          </p>
+          <a
+            href="/dashboard/pricing"
+            style={{
+              fontFamily: "'Rowdies', cursive",
+              fontSize: "0.9rem",
+              color: "var(--w)",
+              background: "var(--pink)",
+              border: "2px solid var(--ink)",
+              padding: "12px 28px",
+              borderRadius: "10px",
+              textDecoration: "none",
+              display: "inline-block",
+              transition: "all 0.2s",
+            }}
+          >
+            Unlock Drink Requests
+          </a>
+        </div>
+      )}
+
       {/* Your suggestion card */}
+      {isPro !== false && (<>
       <div
         style={{
           background: "var(--w)",
@@ -646,6 +723,7 @@ export default function RequestDrinksPage() {
           )}
         </>
       )}
+      </>)}
 
       <style>{`
         @keyframes toastyBubbleIn {

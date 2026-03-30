@@ -14,6 +14,8 @@ interface InteractiveToastyProps {
   initialBottom?: number;
   /** Initial right offset in px */
   initialRight?: number;
+  /** Speech bubble text */
+  speech?: string;
 }
 
 interface FloatingHeart {
@@ -26,12 +28,15 @@ export default function InteractiveToasty({
   children,
   initialBottom = 20,
   initialRight = 30,
+  speech = "",
 }: InteractiveToastyProps) {
   // Position state (using bottom/right initially, switch to top/left when dragging)
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
   const [dragging, setDragging] = useState(false);
   const [hearts, setHearts] = useState<FloatingHeart[]>([]);
   const [swatting, setSwatting] = useState(false);
+  const [swatMessage, setSwatMessage] = useState("Hey! Stop that!");
+  const swatIndex = useRef(0);
   const [plop, setPlop] = useState(false);
   const [purring, setPurring] = useState(false);
 
@@ -186,8 +191,24 @@ export default function InteractiveToasty({
 
     if (clickCount.current >= 5) {
       clickCount.current = 0;
+      const messages = [
+        "Hey! Stop that!",
+        "I'm not a button!",
+        "Ow ow ow!",
+        "Do that again, I dare you",
+        "Okay that tickles",
+        "I'll remember this...",
+        "Rude.",
+        "Go make a card instead!",
+        "Are you bored?",
+        "That's my tail!",
+        "Fine. I'll just sit here.",
+        "You're lucky I'm cute",
+      ];
+      setSwatMessage(messages[swatIndex.current % messages.length]);
+      swatIndex.current += 1;
       setSwatting(true);
-      setTimeout(() => setSwatting(false), 600);
+      setTimeout(() => setSwatting(false), 800);
     }
   }, [dragging]);
 
@@ -268,6 +289,52 @@ export default function InteractiveToasty({
       >
         {children}
 
+        {/* Idle speech bubble — positioned above Toasty */}
+        {speech && !swatting && (
+          <div
+            style={{
+              position: "absolute",
+              bottom: "100%",
+              left: "50%",
+              transform: "translateX(-50%)",
+              marginBottom: "6px",
+              background: "var(--w)",
+              border: "2px solid var(--ink)",
+              borderRadius: "10px",
+              padding: "5px 12px",
+              fontFamily: "'Oxygen', sans-serif",
+              fontSize: "0.72rem",
+              color: "var(--ink)",
+              whiteSpace: "nowrap",
+              boxShadow: "2px 2px 0 var(--ink)",
+              animation: "toastyBubbleIn 0.2s ease",
+              pointerEvents: "none",
+            }}
+          >
+            {speech}
+            <div style={{
+              position: "absolute",
+              bottom: "-6px",
+              left: "50%",
+              transform: "translateX(-50%)",
+              width: 0, height: 0,
+              borderLeft: "5px solid transparent",
+              borderRight: "5px solid transparent",
+              borderTop: "5px solid var(--ink)",
+            }} />
+            <div style={{
+              position: "absolute",
+              bottom: "-4px",
+              left: "50%",
+              transform: "translateX(-50%)",
+              width: 0, height: 0,
+              borderLeft: "4px solid transparent",
+              borderRight: "4px solid transparent",
+              borderTop: "4px solid var(--w)",
+            }} />
+          </div>
+        )}
+
         {/* Floating hearts */}
         {hearts.map((h) => (
           <span
@@ -307,7 +374,7 @@ export default function InteractiveToasty({
               animation: "toastyBubbleIn 0.2s ease",
             }}
           >
-            Hey! Stop that!
+            {swatMessage}
           </div>
         )}
       </div>
