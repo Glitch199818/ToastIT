@@ -1,7 +1,23 @@
 import Link from "next/link";
 import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 
-export default function SignupPage() {
+export default async function SignupPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ plan?: string; next?: string }>;
+}) {
+  const params = await searchParams;
+  const plan = params.plan; // "monthly" or "annual" from landing page Go Pro
+  const next = params.next;
+
+  // Build the redirect path for after OAuth
+  let postAuthRedirect = "/dashboard/create";
+  if (plan === "monthly" || plan === "annual") {
+    postAuthRedirect = `/api/polar/checkout-redirect?plan=${plan}`;
+  } else if (next) {
+    postAuthRedirect = next;
+  }
+
   return (
     <div
       style={{
@@ -60,7 +76,7 @@ export default function SignupPage() {
           Start toasting your milestones
         </p>
 
-        <GoogleSignInButton />
+        <GoogleSignInButton redirectAfterAuth={postAuthRedirect} />
 
         <p
           style={{

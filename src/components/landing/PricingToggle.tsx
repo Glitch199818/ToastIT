@@ -80,7 +80,7 @@ export default function PricingToggle() {
             <li>Request new drinks</li>
             <li>Featured on Toasters wall</li>
           </ul>
-          <a href="/auth/signup" className="prb f">
+          <a href={isLifetime ? "/auth/signup?plan=annual" : "/auth/signup?plan=monthly"} className="prb f">
             Go Pro
           </a>
         </div>

@@ -685,14 +685,8 @@ export default function CardGenerator({ isPro = false }: { isPro?: boolean }) {
                 </p>
                 <div style={{ display: "flex", gap: "8px" }}>
                   <button
-                    onClick={async () => {
-                      const res = await fetch("/api/polar/checkout", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ plan: "monthly" }),
-                      });
-                      const data = await res.json();
-                      if (data.url) window.location.href = data.url;
+                    onClick={() => {
+                      window.location.href = "/dashboard/pricing";
                     }}
                     style={{
                       fontFamily: "'Rowdies', cursive",
@@ -852,14 +846,8 @@ export default function CardGenerator({ isPro = false }: { isPro?: boolean }) {
                 First 5 card exports are free. Upgrade for unlimited exports.
               </p>
               <button
-                onClick={async () => {
-                  const res = await fetch("/api/polar/checkout", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ plan: "monthly" }),
-                  });
-                  const data = await res.json();
-                  if (data.url) window.location.href = data.url;
+                onClick={() => {
+                  window.location.href = "/dashboard/pricing";
                 }}
                 style={{
                   fontFamily: "'Rowdies', cursive",

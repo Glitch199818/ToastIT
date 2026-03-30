@@ -2,13 +2,18 @@
 
 import { createClient } from "@/lib/supabase/client";
 
-export default function GoogleSignInButton() {
+export default function GoogleSignInButton({
+  redirectAfterAuth,
+}: {
+  redirectAfterAuth?: string;
+}) {
   const handleSignIn = async () => {
     const supabase = createClient();
+    const next = redirectAfterAuth || "/dashboard/create";
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
         queryParams: {
           prompt: "select_account",
         },

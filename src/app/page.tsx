@@ -9,28 +9,41 @@ export default function Home() {
     const iframe = iframeRef.current;
     if (!iframe) return;
 
-    const destination = "/auth/signup";
-
     const handleLoad = () => {
       try {
         const doc = iframe.contentDocument;
         if (!doc) return;
 
-        // Find all buttons/links with text like "Try for free", "Create your first doodle", "Start free", "Go Pro"
         doc.querySelectorAll("a, button").forEach((el) => {
-          const text = el.textContent?.toLowerCase() || "";
-          if (
+          const text = el.textContent?.toLowerCase().trim() || "";
+
+          // "Go Pro" buttons should carry the plan context
+          if (text === "go pro") {
+            // Detect which plan card this belongs to by checking nearby price text
+            const card = el.closest(".prc");
+            const priceText = card?.querySelector(".pra")?.textContent || "";
+            const isAnnual =
+              priceText.includes("one-time") || priceText.includes("/year") || priceText.includes("48");
+            const plan = isAnnual ? "annual" : "monthly";
+
+            el.addEventListener("click", (e) => {
+              e.preventDefault();
+              window.location.href = `/auth/signup?plan=${plan}`;
+            });
+            if (el.tagName === "A")
+              (el as HTMLAnchorElement).href = `/auth/signup?plan=${plan}`;
+          } else if (
             text.includes("try for free") ||
             text.includes("create your first") ||
             text.includes("start free") ||
-            text.includes("get started") ||
-            text.includes("go pro")
+            text.includes("get started")
           ) {
             el.addEventListener("click", (e) => {
               e.preventDefault();
-              window.location.href = destination;
+              window.location.href = "/auth/signup";
             });
-            if (el.tagName === "A") (el as HTMLAnchorElement).href = destination;
+            if (el.tagName === "A")
+              (el as HTMLAnchorElement).href = "/auth/signup";
           }
         });
       } catch {
