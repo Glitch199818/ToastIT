@@ -1,25 +1,8 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Sidebar from "@/components/dashboard/Sidebar";
-import { polar } from "@/lib/polar";
+import { checkProStatus } from "@/lib/pro-status";
 import DashboardToasty from "@/components/dashboard/DashboardToasty";
-
-async function checkProStatus(email: string): Promise<boolean> {
-  try {
-    const customers = await polar.customers.list({ email });
-    if (customers.result.items.length === 0) return false;
-
-    const customerId = customers.result.items[0].id;
-
-    const subscriptions = await polar.subscriptions.list({
-      customerId,
-      active: true,
-    });
-    return subscriptions.result.items.length > 0;
-  } catch {
-    return false;
-  }
-}
 
 export default async function DashboardLayout({
   children,
