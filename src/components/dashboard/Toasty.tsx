@@ -66,6 +66,19 @@ export function ToastyStatic({
   );
 }
 
+/* ---- Preload helper — caches images so frame swaps don't cause new requests ---- */
+function usePreloadedFrames(frames: string[]) {
+  const loaded = useRef(false);
+  useEffect(() => {
+    if (loaded.current) return;
+    loaded.current = true;
+    frames.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, [frames]);
+}
+
 /* ---- Toasty Idle animation (frame-by-frame) ---- */
 const IDLE_FRAMES = Array.from({ length: 8 }, (_, i) =>
   `/toasty_idle/${String(i + 1).padStart(2, "0")}.png`
@@ -73,6 +86,7 @@ const IDLE_FRAMES = Array.from({ length: 8 }, (_, i) =>
 
 export function ToastyIdle({ size = 100 }: { size?: number }) {
   const [frame, setFrame] = useState(0);
+  usePreloadedFrames(IDLE_FRAMES);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -107,6 +121,7 @@ const DRINK_FRAMES = Array.from({ length: 5 }, (_, i) =>
 
 export function ToastyDrinks({ size = 100 }: { size?: number }) {
   const [frame, setFrame] = useState(0);
+  usePreloadedFrames(DRINK_FRAMES);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -361,6 +376,7 @@ function ToastySVG({
   blinking?: boolean;
 }) {
   const [frame, setFrame] = useState(0);
+  usePreloadedFrames(WALK_FRAMES);
 
   useEffect(() => {
     const interval = setInterval(() => {
