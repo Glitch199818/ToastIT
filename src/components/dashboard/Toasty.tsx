@@ -66,19 +66,6 @@ export function ToastyStatic({
   );
 }
 
-/* ---- Preload helper — caches images so frame swaps don't cause new requests ---- */
-function usePreloadedFrames(frames: string[]) {
-  const loaded = useRef(false);
-  useEffect(() => {
-    if (loaded.current) return;
-    loaded.current = true;
-    frames.forEach((src) => {
-      const img = new Image();
-      img.src = src;
-    });
-  }, [frames]);
-}
-
 /* ---- Toasty Idle animation (frame-by-frame) ---- */
 const IDLE_FRAMES = Array.from({ length: 8 }, (_, i) =>
   `/toasty_idle/${String(i + 1).padStart(2, "0")}.png`
@@ -86,7 +73,6 @@ const IDLE_FRAMES = Array.from({ length: 8 }, (_, i) =>
 
 export function ToastyIdle({ size = 100 }: { size?: number }) {
   const [frame, setFrame] = useState(0);
-  usePreloadedFrames(IDLE_FRAMES);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -97,19 +83,25 @@ export function ToastyIdle({ size = 100 }: { size?: number }) {
 
   const aspectRatio = 1680 / 1376;
   return (
-    <div style={{ width: size, height: size * aspectRatio, position: "relative" }}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={IDLE_FRAMES[frame]}
-        alt=""
-        width={size}
-        height={size * aspectRatio}
-        style={{
-          imageRendering: "pixelated",
-          display: "block",
-          transform: "scaleX(-1)",
-        }}
-      />
+    <div style={{ width: size, height: size * aspectRatio, position: "relative", overflow: "hidden" }}>
+      {IDLE_FRAMES.map((src, i) => (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          key={src}
+          src={src}
+          alt=""
+          width={size}
+          height={size * aspectRatio}
+          style={{
+            imageRendering: "pixelated",
+            display: i === frame ? "block" : "none",
+            transform: "scaleX(-1)",
+            position: i === 0 ? "relative" : "absolute",
+            top: 0,
+            left: 0,
+          }}
+        />
+      ))}
     </div>
   );
 }
@@ -121,7 +113,6 @@ const DRINK_FRAMES = Array.from({ length: 5 }, (_, i) =>
 
 export function ToastyDrinks({ size = 100 }: { size?: number }) {
   const [frame, setFrame] = useState(0);
-  usePreloadedFrames(DRINK_FRAMES);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -132,19 +123,25 @@ export function ToastyDrinks({ size = 100 }: { size?: number }) {
 
   const aspectRatio = 1680 / 1376;
   return (
-    <div style={{ width: size, height: size * aspectRatio, position: "relative" }}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={DRINK_FRAMES[frame]}
-        alt=""
-        width={size}
-        height={size * aspectRatio}
-        style={{
-          imageRendering: "pixelated",
-          display: "block",
-          transform: "scaleX(-1)",
-        }}
-      />
+    <div style={{ width: size, height: size * aspectRatio, position: "relative", overflow: "hidden" }}>
+      {DRINK_FRAMES.map((src, i) => (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          key={src}
+          src={src}
+          alt=""
+          width={size}
+          height={size * aspectRatio}
+          style={{
+            imageRendering: "pixelated",
+            display: i === frame ? "block" : "none",
+            transform: "scaleX(-1)",
+            position: i === 0 ? "relative" : "absolute",
+            top: 0,
+            left: 0,
+          }}
+        />
+      ))}
     </div>
   );
 }
@@ -376,7 +373,6 @@ function ToastySVG({
   blinking?: boolean;
 }) {
   const [frame, setFrame] = useState(0);
-  usePreloadedFrames(WALK_FRAMES);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -390,18 +386,26 @@ function ToastySVG({
   const displayW = size * (1696 / 1828);
 
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={WALK_FRAMES[frame]}
-      alt="Toasty"
-      width={displayW}
-      height={displayH}
-      style={{
-        imageRendering: "pixelated",
-        display: "block",
-        transform: "scaleX(-1)",
-      }}
-    />
+    <div style={{ width: displayW, height: displayH, position: "relative", overflow: "hidden" }}>
+      {WALK_FRAMES.map((src, i) => (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          key={src}
+          src={src}
+          alt={i === 0 ? "Toasty" : ""}
+          width={displayW}
+          height={displayH}
+          style={{
+            imageRendering: "pixelated",
+            display: i === frame ? "block" : "none",
+            transform: "scaleX(-1)",
+            position: i === 0 ? "relative" : "absolute",
+            top: 0,
+            left: 0,
+          }}
+        />
+      ))}
+    </div>
   );
 }
 
