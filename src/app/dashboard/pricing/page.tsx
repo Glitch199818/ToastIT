@@ -45,28 +45,17 @@ export default function PricingPage() {
       >
         Unlock the full ToastIT experience
       </p>
-      <div
+      <p
         style={{
-          display: "inline-block",
-          background: "#FFF3E0",
-          border: "1.5px solid #FFB74D",
-          borderRadius: "8px",
-          padding: "8px 16px",
+          fontFamily: "'Oxygen', sans-serif",
+          fontSize: "0.85rem",
+          color: "var(--pink)",
+          fontWeight: 600,
           marginBottom: "32px",
         }}
       >
-        <p
-          style={{
-            fontFamily: "'Oxygen', sans-serif",
-            fontSize: "0.8rem",
-            color: "#E65100",
-            fontWeight: 600,
-            margin: 0,
-          }}
-        >
-          Launch offer — lock in these prices before they go up!
-        </p>
-      </div>
+        Launch pricing — lock in these prices before they go up!
+      </p>
 
       <div style={{ display: "flex", gap: "24px", maxWidth: "700px" }}>
         {/* Monthly */}

@@ -355,10 +355,14 @@ export default function CardGenerator({ isPro = false }: { isPro?: boolean }) {
       if (!isPro) {
         const ctx = canvas.getContext("2d");
         if (ctx) {
-          ctx.font = "bold 28px Oxygen, sans-serif";
-          ctx.fillStyle = "rgba(0,0,0,0.15)";
-          ctx.textAlign = "center";
-          ctx.fillText("toastit.app", canvas.width / 2, canvas.height - 30);
+          const fontSize = Math.round(canvas.width * 0.035);
+          ctx.font = `600 ${fontSize}px Oxygen, sans-serif`;
+          ctx.textAlign = "right";
+          // Shadow for readability on any background
+          ctx.fillStyle = "rgba(255,255,255,0.6)";
+          ctx.fillText("Made with ToastIT", canvas.width - 20, canvas.height - 18);
+          ctx.fillStyle = "rgba(0,0,0,0.35)";
+          ctx.fillText("Made with ToastIT", canvas.width - 20, canvas.height - 18);
         }
       }
 
