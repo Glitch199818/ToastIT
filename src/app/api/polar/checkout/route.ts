@@ -44,9 +44,21 @@ export async function POST(req: NextRequest) {
     console.log("Checkout debug:", {
       productId,
       plan,
+      launchEligible,
       tokenPrefix: token.substring(0, 8) + "...",
       tokenLength: token.length,
+      launchMonthlyId: PRODUCTS.launchMonthly,
+      launchAnnualId: PRODUCTS.launchAnnual,
+      monthlyId: PRODUCTS.monthly,
+      annualId: PRODUCTS.annual,
+      siteUrl: process.env.NEXT_PUBLIC_SITE_URL,
     });
+
+    if (!productId) {
+      console.error("Product ID is undefined/empty!");
+      return NextResponse.json({ error: "Product ID not configured" }, { status: 500 });
+    }
+
     const checkout = await polar.checkouts.create({
       products: [productId],
       successUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard/create?upgraded=true`,
@@ -58,7 +70,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ url: checkout.url });
   } catch (err: unknown) {
-    console.error("Polar checkout error:", err);
+    console.error("Polar checkout error:", JSON.stringify(err, Object.getOwnPropertyNames(err as object)));
     const message = err instanceof Error ? err.message : "Unknown error";
     return NextResponse.json({ error: message }, { status: 500 });
   }
