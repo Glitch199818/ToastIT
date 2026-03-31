@@ -3,6 +3,7 @@ import SignOutButton from "@/components/auth/SignOutButton";
 import Link from "next/link";
 import { checkProStatus } from "@/lib/pro-status";
 import ProfileEditor from "@/components/dashboard/ProfileEditor";
+import ManageSubscriptionButton from "@/components/dashboard/ManageSubscriptionButton";
 
 export default async function ProfilePage() {
   const supabase = await createClient();
@@ -76,7 +77,9 @@ export default async function ProfilePage() {
               {isPro ? "Pro — Unlimited exports, no watermark" : "Free — first 5 exports"}
             </p>
           </div>
-          {!isPro && (
+          {isPro ? (
+            <ManageSubscriptionButton />
+          ) : (
             <Link
               href="/dashboard/pricing"
               style={{
