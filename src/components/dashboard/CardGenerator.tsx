@@ -1184,8 +1184,8 @@ export default function CardGenerator({ isPro = false }: { isPro?: boolean }) {
       {/* Confetti burst on download */}
       {toastyDancing && (
         <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 199, overflow: "hidden" }}>
-          {Array.from({ length: 60 }).map((_, i) => {
-            const angle = (i / 60) * 360 + (Math.random() - 0.5) * 30;
+          {Array.from({ length: 150 }).map((_, i) => {
+            const angle = (i / 150) * 360 + (Math.random() - 0.5) * 40;
             const rad = (angle * Math.PI) / 180;
             const distance = 200 + Math.random() * 400;
             const tx = Math.cos(rad) * distance;
