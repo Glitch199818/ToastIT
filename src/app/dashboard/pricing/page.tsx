@@ -222,7 +222,7 @@ export default function PricingPage() {
               fontFamily: "'Kanit', sans-serif",
               fontWeight: 700,
               fontSize: "0.85rem",
-              color: "var(--w)",
+              color: "var(--ink)",
               marginBottom: "8px",
               textTransform: "uppercase",
               letterSpacing: "0.5px",
@@ -236,7 +236,7 @@ export default function PricingPage() {
                 fontFamily: "'Kanit', sans-serif",
                 fontWeight: 700,
                 fontSize: "2.4rem",
-                color: "var(--w)",
+                color: "var(--ink)",
               }}
             >
               $4
@@ -245,7 +245,7 @@ export default function PricingPage() {
               style={{
                 fontFamily: "'Oxygen', sans-serif",
                 fontSize: "0.9rem",
-                color: "var(--w)",
+                color: "var(--ink)",
                 opacity: 0.8,
               }}
             >
@@ -256,7 +256,7 @@ export default function PricingPage() {
             style={{
               fontFamily: "'Oxygen', sans-serif",
               fontSize: "0.75rem",
-              color: "var(--w)",
+              color: "var(--ink)",
               opacity: 0.7,
               marginBottom: "20px",
             }}
@@ -285,7 +285,7 @@ export default function PricingPage() {
                 style={{
                   fontFamily: "'Oxygen', sans-serif",
                   fontSize: "0.85rem",
-                  color: "var(--w)",
+                  color: "var(--ink)",
                   padding: "6px 0",
                   display: "flex",
                   alignItems: "center",
