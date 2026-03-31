@@ -245,50 +245,61 @@ export default function RequestDrinksPage() {
   const activeRequests = requests.filter((r) => r.status === "voting");
   const addedDrinks = requests.filter((r) => r.status === "added");
 
+  // Unified loading: wait for pro status check to finish
+  const isReady = isPro !== null && (isPro === false || !loading);
+
   return (
     <div style={{ padding: "32px 36px", maxWidth: "780px" }}>
-      {/* Header */}
-      <h1
-        style={{
-          fontFamily: "'Kanit', sans-serif",
-          fontWeight: 700,
-          fontSize: "2.125rem",
-          color: "var(--ink)",
-          marginBottom: isPro === false ? "0px" : "4px",
-        }}
-      >
-        Drink Requests
-      </h1>
-      {isPro !== false && (
-        <p
-          style={{
-            fontFamily: "'Oxygen', sans-serif",
-            fontSize: "0.9rem",
-            color: "var(--im)",
-            marginBottom: "24px",
-          }}
-        >
-          Vote for drinks you want added. Top pick each week wins.
-        </p>
-      )}
-
-      {/* Loading state */}
-      {isPro === null && (
-        <div style={{ paddingTop: "48px", display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <div style={{ width: "200px", height: "20px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "200% 100%", animation: "shimmer 1.5s infinite", borderRadius: "6px" }} />
+      {/* Loading shimmer — shown until everything is ready */}
+      {!isReady && (
+        <div>
+          <div style={{ width: "180px", height: "28px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "200% 100%", animation: "shimmer 1.5s infinite", borderRadius: "8px", marginBottom: "12px" }} />
+          <div style={{ width: "300px", height: "16px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "200% 100%", animation: "shimmer 1.5s infinite", borderRadius: "6px", marginBottom: "32px" }} />
+          <div style={{ width: "100%", height: "120px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "200% 100%", animation: "shimmer 1.5s infinite", borderRadius: "14px" }} />
           <style>{`@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }`}</style>
         </div>
       )}
 
+      {/* Content — only shown when ready */}
+      {isReady && (
+        <>
+        {/* Header */}
+        <h1
+          style={{
+            fontFamily: "'Kanit', sans-serif",
+            fontWeight: 700,
+            fontSize: "2.125rem",
+            color: "var(--ink)",
+            marginBottom: isPro === false ? "0px" : "4px",
+          }}
+        >
+          Drink Requests
+        </h1>
+        {isPro !== false && (
+          <p
+            style={{
+              fontFamily: "'Oxygen', sans-serif",
+              fontSize: "0.9rem",
+              color: "var(--im)",
+              marginBottom: "24px",
+            }}
+          >
+            Vote for drinks you want added. Top pick each week wins.
+          </p>
+        )}
+        </>
+      )}
+
       {/* Upgrade gate for free users */}
-      {isPro === false && (
+      {isReady && isPro === false && (
         <div
           style={{
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
+            justifyContent: "center",
             textAlign: "center",
-            paddingTop: "48px",
+            minHeight: "calc(100vh - 200px)",
           }}
         >
           <ToastyDrinks size={120} />
@@ -348,7 +359,7 @@ export default function RequestDrinksPage() {
       )}
 
       {/* Your suggestion card */}
-      {isPro !== false && isPro !== null && (<>
+      {isReady && isPro && (<>
       <div
         style={{
           background: "var(--w)",
@@ -482,9 +493,7 @@ export default function RequestDrinksPage() {
       )}
 
       {/* Voting list */}
-      {loading ? (
-        <p style={{ fontFamily: "'Oxygen', sans-serif", color: "var(--im)" }}>Loading...</p>
-      ) : activeRequests.length === 0 && addedDrinks.length === 0 ? (
+      {activeRequests.length === 0 && addedDrinks.length === 0 ? (
         <div style={{ textAlign: "center", paddingTop: "40px" }}>
           <p
             style={{
