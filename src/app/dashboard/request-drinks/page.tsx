@@ -260,33 +260,30 @@ export default function RequestDrinksPage() {
         </div>
       )}
 
-      {/* Content — only shown when ready */}
-      {isReady && (
+      {/* Header — only for pro users */}
+      {isReady && isPro && (
         <>
-        {/* Header */}
         <h1
           style={{
             fontFamily: "'Kanit', sans-serif",
             fontWeight: 700,
             fontSize: "2.125rem",
             color: "var(--ink)",
-            marginBottom: isPro === false ? "0px" : "4px",
+            marginBottom: "4px",
           }}
         >
           Drink Requests
         </h1>
-        {isPro !== false && (
-          <p
-            style={{
-              fontFamily: "'Oxygen', sans-serif",
-              fontSize: "0.9rem",
-              color: "var(--im)",
-              marginBottom: "24px",
-            }}
-          >
-            Vote for drinks you want added. Top pick each week wins.
-          </p>
-        )}
+        <p
+          style={{
+            fontFamily: "'Oxygen', sans-serif",
+            fontSize: "0.9rem",
+            color: "var(--im)",
+            marginBottom: "24px",
+          }}
+        >
+          Vote for drinks you want added. Top pick each week wins.
+        </p>
         </>
       )}
 
@@ -308,7 +305,7 @@ export default function RequestDrinksPage() {
             pointerEvents: "none",
           }}
         >
-        <div style={{ pointerEvents: "auto" }}>
+        <div style={{ pointerEvents: "auto", display: "flex", flexDirection: "column", alignItems: "center" }}>
           <ToastyDrinks size={120} />
           <p
             style={{
