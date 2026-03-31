@@ -294,14 +294,21 @@ export default function RequestDrinksPage() {
       {isReady && isPro === false && (
         <div
           style={{
+            position: "fixed",
+            top: 0,
+            left: "240px",
+            right: 0,
+            bottom: 0,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
             textAlign: "center",
-            minHeight: "calc(100vh - 200px)",
+            paddingBottom: "60px",
+            pointerEvents: "none",
           }}
         >
+        <div style={{ pointerEvents: "auto" }}>
           <ToastyDrinks size={120} />
           <p
             style={{
@@ -355,6 +362,7 @@ export default function RequestDrinksPage() {
           >
             Unlock Drink Requests
           </a>
+        </div>
         </div>
       )}
 
