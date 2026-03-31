@@ -84,12 +84,20 @@ export async function GET(request: Request) {
       if (user) {
         const createdAt = new Date(user.created_at);
         const now = new Date();
-        const isNewUser = now.getTime() - createdAt.getTime() < 60_000; // within last 60 seconds
+        const isNewUser = now.getTime() - createdAt.getTime() < 300_000; // within last 5 minutes
+
+        console.log("Auth callback:", {
+          email: user.email,
+          isNewUser,
+          createdAt: user.created_at,
+          timeDiff: now.getTime() - createdAt.getTime(),
+        });
 
         if (isNewUser) {
           const name = user.user_metadata?.full_name || user.user_metadata?.name || "there";
-          // Fire and forget — don't block the redirect
-          sendWelcomeEmails(user.email!, name);
+
+          // Await emails so serverless doesn't kill the function before sending
+          await sendWelcomeEmails(user.email!, name);
 
           // Insert welcome notification
           try {
