@@ -122,16 +122,18 @@ export default function Sidebar({ isPro = false }: { isPro?: boolean }) {
       <Link
         href="/"
         style={{
-          fontFamily: "'Kanit', sans-serif",
-          fontWeight: 700,
-          fontSize: "1.6rem",
-          color: "var(--ink)",
           textDecoration: "none",
           padding: "0 20px",
           marginBottom: "24px",
+          display: "block",
         }}
       >
-        ToastIT
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/ToastITLogo.png"
+          alt="ToastIT"
+          style={{ height: "28px" }}
+        />
       </Link>
 
       {/* Nav Items */}

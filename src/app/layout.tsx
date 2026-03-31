@@ -6,6 +6,10 @@ export const metadata: Metadata = {
   title: "ToastIT — Turn your milestones into doodles",
   description:
     "Your milestone deserves more than a text tweet. Get hand-drawn drink doodle visuals that make people stop and spark conversations.",
+  icons: {
+    icon: "/Favicon.png",
+    apple: "/Favicon.png",
+  },
   openGraph: {
     title: "ToastIT — Turn your milestones into doodles",
     description:
@@ -15,7 +19,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "https://toastit.app/og-image.png",
+        url: "https://toastit.app/PreviewCard.png",
         width: 1200,
         height: 630,
         alt: "ToastIT — Turn your X milestones into doodles that Toast IT",
@@ -28,7 +32,7 @@ export const metadata: Metadata = {
     description:
       "Hand-drawn drink doodle cards for your X/Twitter milestones. Pick a drink, drop your number, toast it.",
     site: "@sushbuilds",
-    images: ["https://toastit.app/og-image.png"],
+    images: ["https://toastit.app/PreviewCard.png"],
   },
 };
 
