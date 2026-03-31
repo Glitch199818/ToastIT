@@ -75,12 +75,31 @@ export async function POST() {
     const sub = subscriptions.result.items[0];
 
     // Cancel at end of billing period (not immediate revoke)
-    await polar.subscriptions.update({
-      id: sub.id,
-      subscriptionUpdate: {
-        cancelAtPeriodEnd: true,
-      },
-    });
+    try {
+      await polar.subscriptions.update({
+        id: sub.id,
+        subscriptionUpdate: {
+          cancelAtPeriodEnd: true,
+        },
+      });
+    } catch (updateErr) {
+      // If update fails, try the revoke endpoint as fallback
+      console.error("subscriptions.update failed, details:", updateErr);
+      // Try direct API call as fallback
+      const res = await fetch(`https://api.polar.sh/v1/subscriptions/${sub.id}`, {
+        method: "PATCH",
+        headers: {
+          "Authorization": `Bearer ${process.env.POLAR_ACCESS_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ cancel_at_period_end: true }),
+      });
+      if (!res.ok) {
+        const errBody = await res.text();
+        console.error("Direct API cancel failed:", res.status, errBody);
+        return NextResponse.json({ error: "Failed to cancel" }, { status: 500 });
+      }
+    }
 
     return NextResponse.json({ success: true });
   } catch (err) {
