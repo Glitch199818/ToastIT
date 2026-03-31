@@ -82,9 +82,12 @@ export default function Sidebar({ isPro = false }: { isPro?: boolean }) {
     const fetchUnread = async () => {
       try {
         const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
         const { count } = await supabase
           .from("notifications")
           .select("*", { count: "exact", head: true })
+          .eq("user_id", user.id)
           .eq("read", false);
         setUnreadCount(count || 0);
       } catch {

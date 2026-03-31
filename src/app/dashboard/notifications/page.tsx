@@ -19,9 +19,13 @@ export default function NotificationsPage() {
   useEffect(() => {
     const fetchNotifications = async () => {
       const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
       const { data } = await supabase
         .from("notifications")
         .select("*")
+        .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
       setNotifications(data || []);

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -89,6 +90,19 @@ export async function GET(request: Request) {
           const name = user.user_metadata?.full_name || user.user_metadata?.name || "there";
           // Fire and forget — don't block the redirect
           sendWelcomeEmails(user.email!, name);
+
+          // Insert welcome notification
+          try {
+            const admin = createAdminClient();
+            await admin.from("notifications").insert({
+              user_id: user.id,
+              type: "welcome",
+              message: `Welcome to ToastIT, ${name}! Pick a drink, drop your milestone, and share your first card.`,
+              read: false,
+            });
+          } catch (err) {
+            console.error("Failed to insert welcome notification:", err);
+          }
         }
       }
 
