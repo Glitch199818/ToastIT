@@ -46,15 +46,33 @@ export default function Home() {
               (el as HTMLAnchorElement).href = isLoggedIn
                 ? "/dashboard/pricing"
                 : `/auth/signup?plan=${plan}`;
-          } else if (
-            text.includes("try for free") ||
-            text.includes("create your first") ||
-            text.includes("start free") ||
-            text.includes("get started")
-          ) {
-            // Swap text and link for logged-in users
+          } else if (text.includes("try for free")) {
+            // Nav "Try for free" → "Dashboard" for logged-in users
             if (isLoggedIn) {
               el.textContent = "Dashboard";
+              el.addEventListener("click", (e) => {
+                e.preventDefault();
+                window.location.href = "/dashboard/create";
+              });
+              if (el.tagName === "A")
+                (el as HTMLAnchorElement).href = "/dashboard/create";
+            } else {
+              el.addEventListener("click", (e) => {
+                e.preventDefault();
+                window.location.href = "/auth/signup";
+              });
+              if (el.tagName === "A")
+                (el as HTMLAnchorElement).href = "/auth/signup";
+            }
+          } else if (
+            text.includes("create your first") ||
+            text.includes("start free") ||
+            text.includes("start toasting") ||
+            text.includes("get started")
+          ) {
+            // Other CTAs → "Start Toasting" for logged-in, signup for logged-out
+            if (isLoggedIn) {
+              el.textContent = "Start Toasting";
               el.addEventListener("click", (e) => {
                 e.preventDefault();
                 window.location.href = "/dashboard/create";

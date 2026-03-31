@@ -270,6 +270,25 @@ export default function Sidebar({ isPro = false }: { isPro?: boolean }) {
           </Link>
         </div>
       )}
+
+      {/* Feedback link */}
+      <a
+        href="mailto:support@toastit.app"
+        style={{
+          fontFamily: "'Oxygen', sans-serif",
+          fontSize: "0.72rem",
+          color: "var(--im)",
+          textDecoration: "none",
+          textAlign: "center",
+          marginTop: "12px",
+          padding: "0 14px",
+          transition: "color 0.2s",
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.color = "var(--pink)")}
+        onMouseLeave={(e) => (e.currentTarget.style.color = "var(--im)")}
+      >
+        Feedback &amp; Support
+      </a>
     </aside>
   );
 }
