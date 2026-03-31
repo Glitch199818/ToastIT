@@ -57,12 +57,15 @@ export async function POST() {
   }
 
   try {
+    // Find customer
     const customers = await polar.customers.list({ email: user.email });
     if (customers.result.items.length === 0) {
       return NextResponse.json({ error: "No subscription found" }, { status: 404 });
     }
 
     const customerId = customers.result.items[0].id;
+
+    // Find active subscription
     const subscriptions = await polar.subscriptions.list({
       customerId,
       active: true,
@@ -72,33 +75,33 @@ export async function POST() {
       return NextResponse.json({ error: "No active subscription" }, { status: 404 });
     }
 
-    const sub = subscriptions.result.items[0];
+    const subId = subscriptions.result.items[0].id;
 
-    // Cancel at end of billing period (not immediate revoke)
-    try {
-      await polar.subscriptions.update({
-        id: sub.id,
-        subscriptionUpdate: {
-          cancelAtPeriodEnd: true,
-        },
+    // Cancel at period end via direct Polar REST API
+    const token = process.env.POLAR_ACCESS_TOKEN || "";
+    const apiBase = process.env.POLAR_API_URL || "https://api.polar.sh";
+    const res = await fetch(`${apiBase}/v1/subscriptions/${subId}`, {
+      method: "PATCH",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ cancel_at_period_end: true }),
+    });
+
+    if (!res.ok) {
+      const errBody = await res.text();
+      console.error("Cancel subscription failed:", {
+        status: res.status,
+        body: errBody,
+        subId,
+        apiBase,
+        tokenLength: token.length,
       });
-    } catch (updateErr) {
-      // If update fails, try the revoke endpoint as fallback
-      console.error("subscriptions.update failed, details:", updateErr);
-      // Try direct API call as fallback
-      const res = await fetch(`https://api.polar.sh/v1/subscriptions/${sub.id}`, {
-        method: "PATCH",
-        headers: {
-          "Authorization": `Bearer ${process.env.POLAR_ACCESS_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ cancel_at_period_end: true }),
-      });
-      if (!res.ok) {
-        const errBody = await res.text();
-        console.error("Direct API cancel failed:", res.status, errBody);
-        return NextResponse.json({ error: "Failed to cancel" }, { status: 500 });
-      }
+      return NextResponse.json(
+        { error: `Cancel failed: ${res.status}` },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({ success: true });
