@@ -132,7 +132,7 @@ export default function Sidebar({ isPro = false }: { isPro?: boolean }) {
         <img
           src="/ToastITLogo.png"
           alt="ToastIT"
-          style={{ height: "28px" }}
+          style={{ height: "56px" }}
         />
       </Link>
 
