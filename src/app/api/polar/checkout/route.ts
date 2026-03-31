@@ -2,19 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { polar, PRODUCTS } from "@/lib/polar";
 import { createClient } from "@/lib/supabase/server";
 
-function isWithinLaunchWindow(userCreatedAt: string | null | undefined) {
-  if (!userCreatedAt) return false;
+function isWithinLaunchWindow() {
   const startIso =
     process.env.TOASTIT_LAUNCH_START_DATE ||
     process.env.NEXT_PUBLIC_TOASTIT_LAUNCH_START_DATE ||
     "2026-03-27T00:00:00.000Z";
   const start = new Date(startIso);
-  const createdAt = new Date(userCreatedAt);
-  if (Number.isNaN(start.getTime()) || Number.isNaN(createdAt.getTime())) return false;
+  if (Number.isNaN(start.getTime())) return false;
 
   const days = 30;
+  const now = new Date();
   const end = new Date(start.getTime() + days * 24 * 60 * 60 * 1000);
-  return createdAt >= start && createdAt < end;
+  return now >= start && now < end;
 }
 
 export async function POST(req: NextRequest) {
@@ -32,12 +31,11 @@ export async function POST(req: NextRequest) {
   // For monthly Pro, charge:
   // - launchMonthly for new signups during the first 30 days of launch
   // - regular monthly for everyone else
+  const launchEligible = isWithinLaunchWindow();
   let productId: string;
   if (plan === "annual") {
-    const launchEligible = isWithinLaunchWindow(user.created_at);
     productId = launchEligible ? PRODUCTS.launchAnnual : PRODUCTS.annual;
   } else {
-    const launchEligible = isWithinLaunchWindow(user.created_at);
     productId = launchEligible ? PRODUCTS.launchMonthly : PRODUCTS.monthly;
   }
 
