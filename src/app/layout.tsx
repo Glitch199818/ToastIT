@@ -14,12 +14,12 @@ export const metadata: Metadata = {
     title: "ToastIT — Turn your milestones into doodles",
     description:
       "Hand-drawn drink doodle cards for your X/Twitter milestones. Pick a drink, drop your number, toast it.",
-    url: "https://toastit.app",
+    url: "https://www.toastit.app",
     siteName: "ToastIT",
     type: "website",
     images: [
       {
-        url: "https://toastit.app/PreviewCard.png",
+        url: "https://www.toastit.app/PreviewCard.png",
         width: 1200,
         height: 630,
         alt: "ToastIT — Turn your X milestones into doodles that Toast IT",
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     description:
       "Hand-drawn drink doodle cards for your X/Twitter milestones. Pick a drink, drop your number, toast it.",
     site: "@sushbuilds",
-    images: ["https://toastit.app/PreviewCard.png"],
+    images: ["https://www.toastit.app/PreviewCard.png"],
   },
 };
 
