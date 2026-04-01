@@ -43,6 +43,7 @@ function HistoryCard({ card, onDelete }: { card: Card; onDelete: (id: string) =>
         overflow: "hidden",
         aspectRatio: "1336 / 800",
         background: "#f5f5f5",
+        border: "2px solid var(--ink)",
       }}
     >
       {card.image_url ? (
