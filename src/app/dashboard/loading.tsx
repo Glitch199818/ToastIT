@@ -1,6 +1,6 @@
 export default function DashboardLoading() {
   return (
-    <div style={{ padding: "32px 36px" }}>
+    <div className="dash-page" style={{ padding: "32px 36px" }}>
       {/* Title skeleton */}
       <div
         style={{

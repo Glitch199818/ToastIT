@@ -23,7 +23,7 @@ export default function PricingPage() {
   };
 
   return (
-    <div style={{ padding: "32px 36px" }}>
+    <div className="dash-page" style={{ padding: "32px 36px" }}>
       <h1
         style={{
           fontFamily: "'Kanit', sans-serif",

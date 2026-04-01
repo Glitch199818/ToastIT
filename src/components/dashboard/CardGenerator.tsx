@@ -1,11 +1,24 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import html2canvas from "html2canvas-pro";
 import CardPreview from "./CardPreview";
 import { ToastyStatic } from "./Toasty";
 import { createClient } from "@/lib/supabase/client";
+
+const MOBILE_BREAKPOINT = 768;
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
 
 const FREE_DRINKS = [
   { id: "champagne", name: "Champagne" },
@@ -271,6 +284,7 @@ function MilestoneDropdown({ value, onChange }: { value: string; onChange: (v: s
 }
 
 export default function CardGenerator({ isPro = false }: { isPro?: boolean }) {
+  const isMobile = useIsMobile();
   const [selectedDrink, setSelectedDrink] = useState<string | null>(null);
   const [freeLimitReached, setFreeLimitReached] = useState(false);
   const [checkingLimit, setCheckingLimit] = useState(!isPro);
@@ -441,7 +455,7 @@ export default function CardGenerator({ isPro = false }: { isPro?: boolean }) {
 
   if (freeLimitReached && !isPro) {
     return (
-      <div style={{ padding: "32px 36px" }}>
+      <div style={{ padding: isMobile ? "20px 16px" : "32px 36px" }}>
         <h1
           style={{
             fontFamily: "'Kanit', sans-serif",
@@ -513,22 +527,22 @@ export default function CardGenerator({ isPro = false }: { isPro?: boolean }) {
   }
 
   return (
-    <div style={{ padding: "32px 36px" }}>
+    <div style={{ padding: isMobile ? "20px 16px" : "32px 36px" }}>
       <h1
         style={{
           fontFamily: "'Kanit', sans-serif",
           fontWeight: 700,
-          fontSize: "2.125rem",
+          fontSize: isMobile ? "1.6rem" : "2.125rem",
           color: "var(--ink)",
-          marginBottom: "24px",
+          marginBottom: isMobile ? "16px" : "24px",
         }}
       >
         Create your card
       </h1>
 
-      <div style={{ display: "flex", gap: "40px", alignItems: "stretch" }}>
+      <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: isMobile ? "24px" : "40px", alignItems: "stretch" }}>
         {/* Left: Controls */}
-        <div style={{ flex: "0 0 400px", display: "flex", flexDirection: "column" }}>
+        <div style={{ flex: isMobile ? "none" : "0 0 400px", width: isMobile ? "100%" : undefined, display: "flex", flexDirection: "column" }}>
           {/* Pick a drink */}
           <div style={{ marginBottom: "20px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "8px" }}>
@@ -590,7 +604,7 @@ export default function CardGenerator({ isPro = false }: { isPro?: boolean }) {
                   paddingBottom: "6px",
                   scrollbarWidth: "thin",
                   scrollbarColor: "var(--pink) rgba(0,0,0,.04)",
-                  maxWidth: "354px",
+                  maxWidth: isMobile ? "100%" : "354px",
                 }}
               >
                 {(() => {

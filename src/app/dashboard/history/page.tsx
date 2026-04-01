@@ -194,9 +194,9 @@ export default function HistoryPage() {
   };
 
   return (
-    <div style={{ padding: "32px 36px" }}>
+    <div className="dash-page" style={{ padding: "32px 36px" }}>
       {/* Header with Create button */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+      <div className="dash-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
         <h1
           style={{
             fontFamily: "'Kanit', sans-serif",

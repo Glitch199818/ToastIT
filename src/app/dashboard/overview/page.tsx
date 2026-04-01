@@ -92,9 +92,9 @@ export default function OverviewPage() {
   }
 
   return (
-    <div style={{ padding: "0 8px" }}>
+    <div className="dash-page" style={{ padding: "0 8px" }}>
       {/* Welcome + Create Button */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+      <div className="dash-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
         <div>
           <h1 style={{ fontFamily: "'Kanit', sans-serif", fontWeight: 700, fontSize: "1.8rem", color: "var(--ink)", marginBottom: "2px" }}>
             Hey, {userName}!

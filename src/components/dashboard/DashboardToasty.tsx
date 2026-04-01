@@ -5,6 +5,8 @@ import { useEffect, useRef, useState } from "react";
 import InteractiveToasty from "@/components/dashboard/InteractiveToasty";
 import { ToastyDrinks, ToastyIdle } from "@/components/dashboard/Toasty";
 
+const MOBILE_BREAKPOINT = 768;
+
 const IDLE_SUGGESTIONS = [
   "Try the Champagne!",
   "Mojito vibes today?",
@@ -22,8 +24,16 @@ export default function DashboardToasty() {
   const isRequestDrinks = pathname === "/dashboard/request-drinks";
   const isCreate = pathname === "/dashboard/create" || pathname === "/dashboard";
   const [suggestion, setSuggestion] = useState("");
+  const [isMobile, setIsMobile] = useState(false);
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const suggestionIndex = useRef(0);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   useEffect(() => {
     if (!isCreate) {
@@ -53,6 +63,8 @@ export default function DashboardToasty() {
       window.removeEventListener("click", resetIdle);
     };
   }, [isCreate]);
+
+  if (isMobile) return null;
 
   return (
     <InteractiveToasty initialBottom={20} initialRight={30} speech={suggestion}>

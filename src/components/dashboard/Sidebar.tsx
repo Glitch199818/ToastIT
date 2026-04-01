@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 const navItems = [
@@ -74,9 +74,35 @@ const navItems = [
   },
 ];
 
+const MOBILE_BREAKPOINT = 768;
+
 export default function Sidebar({ isPro = false }: { isPro?: boolean }) {
   const pathname = usePathname();
   const [unreadCount, setUnreadCount] = useState(0);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  // Close drawer on route change
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  // Prevent body scroll when drawer is open
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [mobileOpen]);
 
   useEffect(() => {
     const fetchUnread = async () => {
@@ -91,33 +117,27 @@ export default function Sidebar({ isPro = false }: { isPro?: boolean }) {
           .eq("read", false);
         setUnreadCount(count || 0);
       } catch {
-        // Table may not exist yet
         setUnreadCount(0);
       }
     };
     fetchUnread();
-
-    // Re-check when navigating back
     const interval = setInterval(fetchUnread, 30000);
     return () => clearInterval(interval);
   }, [pathname]);
 
-  return (
-    <aside
-      style={{
-        width: "240px",
-        height: "100vh",
-        position: "fixed",
-        top: 0,
-        left: 0,
-        background: "var(--bg)",
-        borderRight: "1.5px solid rgba(0,0,0,.08)",
-        display: "flex",
-        flexDirection: "column",
-        padding: "24px 0",
-        zIndex: 10,
-      }}
-    >
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === "Escape") setMobileOpen(false);
+  }, []);
+
+  useEffect(() => {
+    if (mobileOpen) {
+      window.addEventListener("keydown", handleKeyDown);
+      return () => window.removeEventListener("keydown", handleKeyDown);
+    }
+  }, [mobileOpen, handleKeyDown]);
+
+  const sidebarContent = (
+    <>
       {/* Logo */}
       <Link
         href="/"
@@ -169,7 +189,6 @@ export default function Sidebar({ isPro = false }: { isPro?: boolean }) {
             >
               <span style={{ opacity: isActive ? 1 : 0.5, display: "flex" }}>{item.icon}</span>
               {item.label}
-              {/* Notification badge */}
               {isNotif && unreadCount > 0 && !isActive && (
                 <span style={{
                   marginLeft: "auto",
@@ -291,6 +310,131 @@ export default function Sidebar({ isPro = false }: { isPro?: boolean }) {
       >
         Feedback &amp; Support
       </a>
+    </>
+  );
+
+  // Mobile: top bar + slide-in drawer
+  if (isMobile) {
+    return (
+      <>
+        {/* Top bar */}
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: "56px",
+            background: "var(--bg)",
+            borderBottom: "1.5px solid rgba(0,0,0,.08)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "0 16px",
+            zIndex: 50,
+          }}
+        >
+          <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/ToastITLogo.png" alt="ToastIT" style={{ height: "36px" }} />
+          </Link>
+          <button
+            onClick={() => setMobileOpen(true)}
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              padding: "8px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            aria-label="Open menu"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="2.5" strokeLinecap="round">
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Overlay */}
+        {mobileOpen && (
+          <div
+            onClick={() => setMobileOpen(false)}
+            style={{
+              position: "fixed",
+              inset: 0,
+              background: "rgba(0,0,0,.4)",
+              zIndex: 99,
+              transition: "opacity 0.2s",
+            }}
+          />
+        )}
+
+        {/* Drawer */}
+        <aside
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "280px",
+            height: "100vh",
+            background: "var(--bg)",
+            borderRight: "1.5px solid rgba(0,0,0,.08)",
+            display: "flex",
+            flexDirection: "column",
+            padding: "24px 0",
+            zIndex: 100,
+            transform: mobileOpen ? "translateX(0)" : "translateX(-100%)",
+            transition: "transform 0.25s ease",
+            overflowY: "auto",
+          }}
+        >
+          {/* Close button */}
+          <button
+            onClick={() => setMobileOpen(false)}
+            style={{
+              position: "absolute",
+              top: "16px",
+              right: "16px",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              padding: "4px",
+            }}
+            aria-label="Close menu"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="2.5" strokeLinecap="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+          {sidebarContent}
+        </aside>
+      </>
+    );
+  }
+
+  // Desktop: fixed sidebar
+  return (
+    <aside
+      style={{
+        width: "240px",
+        height: "100vh",
+        position: "fixed",
+        top: 0,
+        left: 0,
+        background: "var(--bg)",
+        borderRight: "1.5px solid rgba(0,0,0,.08)",
+        display: "flex",
+        flexDirection: "column",
+        padding: "24px 0",
+        zIndex: 10,
+      }}
+    >
+      {sidebarContent}
     </aside>
   );
 }

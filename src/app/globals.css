@@ -999,6 +999,23 @@ footer a {
   animation: fu .8s ease-out .35s both;
 }
 
+/* DASHBOARD RESPONSIVE */
+@media (max-width: 768px) {
+  .dash-page {
+    padding: 20px 16px !important;
+  }
+
+  .dash-page h1 {
+    font-size: 1.6rem !important;
+  }
+
+  .dash-header {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 12px;
+  }
+}
+
 /* RESPONSIVE */
 @media (max-width: 700px) {
   .hero {
@@ -1045,5 +1062,34 @@ footer a {
 
   .rrg {
     grid-template-columns: 1fr;
+  }
+
+  .how, .ex, .tf, .rr, .au, .mk, .fq, .pr, .bc {
+    margin-top: 60px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  footer {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .cw {
+    margin-top: 32px;
+    padding: 16px 0;
+  }
+
+  .hsub {
+    font-size: 1.05rem;
+  }
+
+  .logo img {
+    height: 56px !important;
+  }
+
+  .togopt {
+    padding: 12px 20px;
+    font-size: 0.9rem;
   }
 }

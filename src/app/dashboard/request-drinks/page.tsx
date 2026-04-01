@@ -249,7 +249,7 @@ export default function RequestDrinksPage() {
   const isReady = isPro !== null && (isPro === false || !loading);
 
   return (
-    <div style={{ padding: "32px 36px", maxWidth: "780px" }}>
+    <div className="dash-page" style={{ padding: "32px 36px", maxWidth: "780px" }}>
       {/* Loading shimmer — shown until everything is ready */}
       {!isReady && (
         <div>

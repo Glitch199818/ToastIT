@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import Sidebar from "@/components/dashboard/Sidebar";
 import { checkProStatus } from "@/lib/pro-status";
 import DashboardToasty from "@/components/dashboard/DashboardToasty";
+import DashboardMain from "@/components/dashboard/DashboardMain";
 
 export default async function DashboardLayout({
   children,
@@ -23,16 +24,7 @@ export default async function DashboardLayout({
   return (
     <div style={{ display: "flex", minHeight: "100vh" }}>
       <Sidebar isPro={isPro} />
-      <main
-        style={{
-          flex: 1,
-          marginLeft: "240px",
-          backgroundColor: "#ffffff",
-          minHeight: "100vh",
-        }}
-      >
-        {children}
-      </main>
+      <DashboardMain>{children}</DashboardMain>
       <DashboardToasty />
     </div>
   );
