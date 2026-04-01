@@ -10,11 +10,11 @@ export default async function SignupPage({
   const plan = params.plan; // "monthly" or "annual" from landing page Go Pro
   const next = params.next;
 
-  // Build the redirect path for after OAuth
+  // Build the redirect path for after OAuth (only allow internal paths)
   let postAuthRedirect = "/dashboard/create";
   if (plan === "monthly" || plan === "annual") {
     postAuthRedirect = `/api/polar/checkout-redirect?plan=${plan}`;
-  } else if (next) {
+  } else if (next && next.startsWith("/") && !next.startsWith("//")) {
     postAuthRedirect = next;
   }
 

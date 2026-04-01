@@ -71,10 +71,26 @@ async function sendWelcomeEmails(email: string, name: string) {
   }
 }
 
+// Prevent open redirect attacks — only allow internal paths
+function sanitizeRedirect(next: string | null): string {
+  const fallback = "/dashboard/create";
+  if (!next) return fallback;
+  // Must start with / and not start with // (protocol-relative URL)
+  if (!next.startsWith("/") || next.startsWith("//")) return fallback;
+  // Block any URL that could be parsed as absolute (e.g., /\evil.com)
+  try {
+    const url = new URL(next, "http://localhost");
+    if (url.hostname !== "localhost") return fallback;
+  } catch {
+    return fallback;
+  }
+  return next;
+}
+
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/dashboard/create";
+  const next = sanitizeRedirect(searchParams.get("next"));
 
   if (code) {
     const supabase = await createClient();

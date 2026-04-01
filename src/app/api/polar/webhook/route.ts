@@ -1,23 +1,51 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createHmac, timingSafeEqual } from "crypto";
 
 // Polar sends webhook events for subscription lifecycle changes.
 // We use these to notify users about plan changes.
 
+function verifyWebhookSignature(
+  payload: string,
+  signature: string,
+  secret: string
+): boolean {
+  try {
+    const expectedSig = createHmac("sha256", secret)
+      .update(payload)
+      .digest("hex");
+    const sigBuffer = Buffer.from(signature, "utf-8");
+    const expectedBuffer = Buffer.from(expectedSig, "utf-8");
+    if (sigBuffer.length !== expectedBuffer.length) return false;
+    return timingSafeEqual(sigBuffer, expectedBuffer);
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(req: NextRequest) {
-  // Verify webhook secret
+  // Read raw body for signature verification
+  const rawBody = await req.text();
+
+  // Verify webhook signature
   const webhookSecret = process.env.POLAR_WEBHOOK_SECRET;
   if (webhookSecret) {
-    const signature = req.headers.get("x-polar-signature") || req.headers.get("webhook-signature");
-    // If a secret is set but no valid signature, reject
-    if (!signature) {
-      return NextResponse.json({ error: "Missing signature" }, { status: 401 });
+    const signature =
+      req.headers.get("x-polar-signature") ||
+      req.headers.get("webhook-signature") ||
+      "";
+
+    if (!signature || !verifyWebhookSignature(rawBody, signature, webhookSecret)) {
+      console.error("Polar webhook: invalid signature");
+      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
+  } else {
+    console.warn("Polar webhook: POLAR_WEBHOOK_SECRET not set — skipping signature verification");
   }
 
   let body: Record<string, unknown>;
   try {
-    body = await req.json();
+    body = JSON.parse(rawBody);
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
