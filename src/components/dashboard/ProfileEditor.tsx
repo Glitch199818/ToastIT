@@ -9,11 +9,13 @@ export default function ProfileEditor({
   fullName,
   email,
   xHandle: initialXHandle,
+  website: initialWebsite,
 }: {
   avatarUrl: string | null;
   fullName: string;
   email: string;
   xHandle?: string;
+  website?: string;
 }) {
   const [name, setName] = useState(fullName);
   const [editing, setEditing] = useState(false);
@@ -22,6 +24,9 @@ export default function ProfileEditor({
   const [xHandle, setXHandle] = useState(initialXHandle || "");
   const [editingHandle, setEditingHandle] = useState(false);
   const [savingHandle, setSavingHandle] = useState(false);
+  const [website, setWebsite] = useState(initialWebsite || "");
+  const [editingWebsite, setEditingWebsite] = useState(false);
+  const [savingWebsite, setSavingWebsite] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleSave = async () => {
@@ -346,6 +351,113 @@ export default function ProfileEditor({
                 opacity: 0.4,
               }}
               title="Edit X handle"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 20h9" />
+                <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
+              </svg>
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Website Section */}
+      <div style={{
+        marginTop: "14px",
+        display: "flex",
+        alignItems: "center",
+        gap: "10px",
+      }}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="2" y1="12" x2="22" y2="12" />
+          <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+        </svg>
+        {editingWebsite ? (
+          <div style={{ display: "flex", gap: "8px", alignItems: "center", flex: 1 }}>
+            <input
+              type="text"
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+              placeholder="https://yourproject.com"
+              style={{
+                padding: "8px 12px",
+                fontFamily: "'Oxygen', sans-serif",
+                fontSize: "0.85rem",
+                color: "var(--ink)",
+                background: "var(--bg)",
+                border: "2px solid var(--ink)",
+                borderRadius: "10px",
+                outline: "none",
+                flex: 1,
+              }}
+              onFocus={(e) => (e.target.style.borderColor = "var(--pink)")}
+              onBlur={(e) => (e.target.style.borderColor = "var(--ink)")}
+              autoFocus
+            />
+            <button
+              onClick={async () => {
+                setSavingWebsite(true);
+                try {
+                  const supabase = createClient();
+                  await supabase.auth.updateUser({
+                    data: { website: website },
+                  });
+                  setEditingWebsite(false);
+                } catch (err) {
+                  console.error(err);
+                } finally {
+                  setSavingWebsite(false);
+                }
+              }}
+              disabled={savingWebsite}
+              style={{
+                fontFamily: "'Rowdies', cursive",
+                fontSize: "0.7rem",
+                color: "var(--ink)",
+                background: "var(--pink)",
+                border: "2px solid var(--ink)",
+                padding: "8px 14px",
+                borderRadius: "10px",
+                cursor: "pointer",
+              }}
+            >
+              {savingWebsite ? "..." : "Save"}
+            </button>
+            <button
+              onClick={() => { setWebsite(initialWebsite || ""); setEditingWebsite(false); }}
+              style={{
+                fontFamily: "'Oxygen', sans-serif",
+                fontSize: "0.75rem",
+                color: "var(--im)",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        ) : (
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1 }}>
+            <p style={{
+              fontFamily: "'Oxygen', sans-serif",
+              fontSize: "0.85rem",
+              color: website ? "var(--ink)" : "var(--im)",
+            }}>
+              {website || "Add your website / project link"}
+            </p>
+            <button
+              onClick={() => setEditingWebsite(true)}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: "2px",
+                display: "flex",
+                opacity: 0.4,
+              }}
+              title="Edit website"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 20h9" />

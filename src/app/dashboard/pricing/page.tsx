@@ -171,7 +171,7 @@ export default function PricingPage() {
             style={{
               fontFamily: "'Rowdies', cursive",
               fontSize: "0.85rem",
-              color: "var(--w)",
+              color: "var(--ink)",
               background: "var(--pink)",
               border: "2px solid var(--ink)",
               padding: "12px 24px",

@@ -9,6 +9,7 @@ import { ToastyStatic } from "@/components/dashboard/Toasty";
 interface WallPost {
   id: string;
   handle: string;
+  website?: string;
   milestone: string;
   tweetUrl: string;
   image: string;
@@ -24,6 +25,7 @@ const WALL_POSTS: WallPost[] = [
   {
     id: "sushbuilds-900",
     handle: "sushbuilds",
+    website: "https://toastit.app",
     milestone: "900 Followers",
     tweetUrl: "https://x.com/sushbuilds/status/2030705737069175049",
     image: "/screenshots/post-900-cocktail.png",
@@ -32,6 +34,7 @@ const WALL_POSTS: WallPost[] = [
   {
     id: "sushbuilds-800",
     handle: "sushbuilds",
+    website: "https://toastit.app",
     milestone: "800 Followers",
     tweetUrl: "https://x.com/sushbuilds/status/2030339387008102871",
     image: "/screenshots/post-800-mojito.png",
@@ -323,6 +326,29 @@ export default function WallPage() {
                     }}>
                       @{post.handle}
                     </p>
+                    {post.website && (
+                      <a
+                        href={post.website.startsWith("http") ? post.website : `https://${post.website}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          fontFamily: "'Oxygen', sans-serif",
+                          fontSize: "0.7rem",
+                          color: "var(--pink)",
+                          textDecoration: "none",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "3px",
+                        }}
+                      >
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--pink)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
+                          <polyline points="15 3 21 3 21 9" />
+                          <line x1="10" y1="14" x2="21" y2="3" />
+                        </svg>
+                        {post.website.replace(/^https?:\/\//, "")}
+                      </a>
+                    )}
                   </div>
                   <p style={{
                     fontFamily: "'Oxygen', sans-serif",

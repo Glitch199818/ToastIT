@@ -42,6 +42,7 @@ export default async function ProfilePage() {
           fullName={user?.user_metadata?.full_name || ""}
           email={user?.email || ""}
           xHandle={user?.user_metadata?.x_handle || ""}
+          website={user?.user_metadata?.website || ""}
         />
 
         {/* Plan Info */}
