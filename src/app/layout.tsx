@@ -7,7 +7,10 @@ export const metadata: Metadata = {
   description:
     "Your milestone deserves more than a text tweet. Get hand-drawn drink doodle visuals that make people stop and spark conversations.",
   icons: {
-    icon: "/Favicon.png",
+    icon: [
+      { url: "/favicon.ico", sizes: "48x48" },
+      { url: "/Favicon.png", sizes: "180x180", type: "image/png" },
+    ],
     apple: "/Favicon.png",
   },
   openGraph: {
