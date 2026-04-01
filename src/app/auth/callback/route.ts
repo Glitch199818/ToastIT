@@ -31,7 +31,8 @@ async function sendWelcomeEmails(email: string, name: string) {
               <li><strong>Drop your milestone</strong> — add your number, handle, and pick a color</li>
               <li><strong>Share it</strong> — download your card and post it on X</li>
             </ol>
-            <p style="font-size: 14px; color: #4A4A4A; margin: 0 0 24px;">It takes about 10 seconds. Seriously.</p>
+            <p style="font-size: 14px; color: #4A4A4A; margin: 0 0 12px;">It takes about 10 seconds. Seriously.</p>
+            <p style="font-size: 14px; color: #4A4A4A; margin: 0 0 24px;">Tag <a href="https://x.com/sushbuilds" style="color: #F27A9F; text-decoration: none; font-weight: 700;">@sushbuilds</a> on X to get a repost!</p>
             <a href="${siteUrl}/dashboard/create" style="display: inline-block; background: #F27A9F; color: #fff; font-weight: 700; font-size: 16px; padding: 14px 32px; border-radius: 10px; text-decoration: none; border: 2px solid #1A1A1A;">
               Start Toasting
             </a>
@@ -105,7 +106,7 @@ export async function GET(request: Request) {
             await admin.from("notifications").insert({
               user_id: user.id,
               type: "welcome",
-              message: `Welcome to ToastIT, ${name}! Pick a drink, drop your milestone, and share your first card.`,
+              message: `Welcome to ToastIT, ${name}! Pick a drink, drop your milestone, and share your first card. Tag @sushbuilds on X to get a repost!`,
               read: false,
             });
           } catch (err) {
