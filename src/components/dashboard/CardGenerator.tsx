@@ -366,6 +366,11 @@ export default function CardGenerator({ isPro = false }: { isPro?: boolean }) {
   const handleExport = async () => {
     if (!cardRef.current || !canExport) return;
 
+    // Target export resolution: 3600 × 2025 (5× the internal 720px width)
+    const TARGET_WIDTH = 3600;
+    const TARGET_HEIGHT = 2025;
+    const SCALE_FACTOR = TARGET_WIDTH / 720; // 5
+
     setIsExporting(true);
     setExportLimitHit(false);
     try {
@@ -386,11 +391,34 @@ export default function CardGenerator({ isPro = false }: { isPro?: boolean }) {
         }
       }
 
-      const canvas = await html2canvas(cardRef.current, {
-        scale: 2,
+      // Clone the card so we can safely scale it for export without affecting the UI
+      const originalNode = cardRef.current;
+      const clone = originalNode.cloneNode(true) as HTMLDivElement;
+
+      // Position clone off-screen and scale it to the exact export size
+      clone.style.position = "fixed";
+      clone.style.left = "-10000px";
+      clone.style.top = "0";
+      clone.style.transformOrigin = "top left";
+      clone.style.transform = `scale(${SCALE_FACTOR})`;
+
+      // Ensure the base dimensions match the internal card size used in CardPreview
+      clone.style.width = "720px";
+      clone.style.height = `${720 * (2025 / 3600)}px`;
+
+      document.body.appendChild(clone);
+
+      const canvas = await html2canvas(clone, {
+        // We already scale the DOM node to the target resolution; keep canvas scale at 1
+        scale: 1,
         useCORS: true,
         backgroundColor: null,
+        width: TARGET_WIDTH,
+        height: TARGET_HEIGHT,
       });
+
+      // Clean up cloned node
+      document.body.removeChild(clone);
 
       // Convert to blob for both download and upload
       const blob = await new Promise<Blob>((resolve) => {
