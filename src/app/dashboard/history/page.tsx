@@ -21,7 +21,9 @@ function HistoryCard({ card, onDelete }: { card: Card; onDelete: (id: string) =>
   const handleRedownload = () => {
     if (!card.image_url) return;
     const link = document.createElement("a");
-    link.download = `toastit-${card.milestone_number}-${card.milestone_type.toLowerCase().replace(/\s+/g, "-")}.png`;
+    const lowerUrl = card.image_url.toLowerCase();
+    const ext = lowerUrl.includes(".png") ? "png" : lowerUrl.includes(".jpeg") ? "jpg" : "jpg";
+    link.download = `toastit-${card.milestone_number}-${card.milestone_type.toLowerCase().replace(/\s+/g, "-")}.${ext}`;
     link.href = card.image_url;
     link.target = "_blank";
     link.click();

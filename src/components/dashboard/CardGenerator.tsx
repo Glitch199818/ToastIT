@@ -370,6 +370,7 @@ export default function CardGenerator({ isPro = false }: { isPro?: boolean }) {
     const TARGET_WIDTH = 3600;
     const TARGET_HEIGHT = 2025;
     const SCALE_FACTOR = TARGET_WIDTH / 720; // 5
+    const TARGET_FILE_BYTES = 300 * 1024; // 307,200 bytes
 
     setIsExporting(true);
     setExportLimitHit(false);
@@ -408,11 +409,17 @@ export default function CardGenerator({ isPro = false }: { isPro?: boolean }) {
 
       document.body.appendChild(clone);
 
+      // Flatten any potential transparency with the card's own background color.
+      // This helps JPEG encoding remain consistent.
+      const computedBg = window.getComputedStyle(originalNode).backgroundColor;
+      const flattenedBg =
+        computedBg && computedBg !== "rgba(0, 0, 0, 0)" && computedBg !== "transparent" ? computedBg : "#ffffff";
+
       const canvas = await html2canvas(clone, {
         // We already scale the DOM node to the target resolution; keep canvas scale at 1
         scale: 1,
         useCORS: true,
-        backgroundColor: null,
+        backgroundColor: flattenedBg,
         width: TARGET_WIDTH,
         height: TARGET_HEIGHT,
       });
@@ -421,14 +428,64 @@ export default function CardGenerator({ isPro = false }: { isPro?: boolean }) {
       document.body.removeChild(clone);
 
       // Convert to blob for both download and upload
-      const blob = await new Promise<Blob>((resolve) => {
-        canvas.toBlob((b) => resolve(b!), "image/png");
-      });
+      const toJpegBlob = (quality: number) =>
+        new Promise<Blob>((resolve, reject) => {
+          canvas.toBlob(
+            (b) => {
+              if (!b) reject(new Error("Failed to encode JPEG blob"));
+              else resolve(b);
+            },
+            "image/jpeg",
+            quality
+          );
+        });
+
+      const padBlobToExactSize = async (blob: Blob) => {
+        if (blob.size === TARGET_FILE_BYTES) return blob;
+        if (blob.size > TARGET_FILE_BYTES) {
+          throw new Error("Cannot pad: blob larger than target size");
+        }
+        const buf = new Uint8Array(await blob.arrayBuffer());
+        const padded = new Uint8Array(TARGET_FILE_BYTES);
+        padded.set(buf, 0);
+        // Trailing padding bytes (JPEG decoders typically ignore trailing data).
+        return new Blob([padded], { type: "image/jpeg" });
+      };
+
+      // Find the highest quality JPEG that is <= 300KB, then pad to exactly 300KB.
+      // This makes the file size deterministic byte-for-byte.
+      let low = 0.001;
+      let high = 0.95;
+      let bestUnder: Blob | null = null;
+      const attempts = 11;
+      for (let i = 0; i < attempts; i++) {
+        const mid = (low + high) / 2;
+        const candidate = await toJpegBlob(mid);
+        if (candidate.size <= TARGET_FILE_BYTES) {
+          bestUnder = candidate;
+          low = mid; // try a bit higher quality
+        } else {
+          high = mid; // too big, reduce quality
+        }
+      }
+
+      let blob: Blob;
+      if (bestUnder) {
+        blob = await padBlobToExactSize(bestUnder);
+      } else {
+        // Fallback: even the minimum quality didn't reach 300KB.
+        // We still export at the smallest attempt we have.
+        // eslint-disable-next-line no-console
+        console.warn("Could not reach 300KB; exporting smallest attempt.");
+        const smallest = await toJpegBlob(low);
+        if (smallest.size <= TARGET_FILE_BYTES) blob = await padBlobToExactSize(smallest);
+        else blob = smallest; // cannot reach target size without breaking dimension/encoding constraints
+      }
 
       // Download locally
       const blobUrl = URL.createObjectURL(blob);
       const link = document.createElement("a");
-      link.download = `toastit-${milestoneNumber}-${milestoneType.toLowerCase().replace(/\s+/g, "-")}.png`;
+      link.download = `toastit-${milestoneNumber}-${milestoneType.toLowerCase().replace(/\s+/g, "-")}.jpg`;
       link.href = blobUrl;
       link.click();
       URL.revokeObjectURL(blobUrl);
@@ -437,10 +494,10 @@ export default function CardGenerator({ isPro = false }: { isPro?: boolean }) {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        const fileName = `${user.id}/${Date.now()}.png`;
+        const fileName = `${user.id}/${Date.now()}.jpg`;
         const { data: uploadData } = await supabase.storage
           .from("card-images")
-          .upload(fileName, blob, { contentType: "image/png" });
+          .upload(fileName, blob, { contentType: "image/jpeg" });
 
         let imageUrl: string | null = null;
         if (uploadData?.path) {
